@@ -1,0 +1,15 @@
+{
+  "name": "story-swap-database",
+  "version": "1.0.0",
+  "description": "Database models, configurations, and scripts for Story Swap application",
+  "main": "database.js",
+  "scripts": {
+    "seed": "node seedDatabase.js",
+    "verify": "node verifyData.js",
+    "migrate": "node scripts/seedData.js"
+  },
+  "dependencies": {
+    "mongoose": "^7.0.0"
+  },
+  "type": "commonjs"
+}
