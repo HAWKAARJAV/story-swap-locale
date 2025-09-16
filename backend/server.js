@@ -117,8 +117,8 @@ app.use('*', (req, res) => {
   });
 });
 
-// Global error handler
-app.use(errorHandler);
+// Global error handler (temporarily commented out for debugging)
+// app.use(errorHandler);
 
 // Graceful shutdown handling
 process.on('SIGTERM', () => {

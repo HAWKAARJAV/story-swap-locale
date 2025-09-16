@@ -3,7 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 
 // Database connection setup
-const { connectDB } = require('./config/database');
+const { connectDB } = require('./database');
 
 // Import models
 const User = require('./models/User');

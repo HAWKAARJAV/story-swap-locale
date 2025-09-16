@@ -9,9 +9,10 @@ story-swap-local/
 ├── backend/                 # Express.js API server
 │   ├── config/             # Server configurations
 │   ├── controllers/        # Request handlers
+│   ├── logs/               # Application logs
 │   ├── middleware/         # Express middleware
 │   ├── routes/             # API route definitions
-│   ├── services/           # Business logic services
+│   ├── scripts/            # Backend utility scripts
 │   ├── utils/              # Utility functions
 │   └── server.js           # Main server file
 ├── database/               # Database layer (MongoDB/Mongoose)
@@ -21,14 +22,16 @@ story-swap-local/
 │   ├── verifyData.js       # Data verification script
 │   └── database.js         # Database connection configuration
 ├── frontend/               # Frontend applications
-│   ├── (Next.js app)/      # Existing Next.js frontend
+│   ├── (Next.js app)/      # Next.js frontend
 │   └── vite-frontend/      # Vite/React frontend
 │       ├── src/            # React components and pages
 │       ├── public/         # Static assets
 │       ├── index.html      # Main HTML template
 │       ├── vite.config.ts  # Vite configuration
 │       └── package.json    # Frontend dependencies
-└── docs/                   # Project documentation
+├── .gitignore              # Git ignore rules
+├── PROJECT_STRUCTURE.md    # This documentation file
+└── README.md               # Project documentation
 ```
 
 ## Key Changes Made
