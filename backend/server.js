@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const { connectDB } = require('../database/database');
 const { setupSwagger } = require('./config/swagger');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
 // Import routes
@@ -117,8 +117,8 @@ app.use('*', (req, res) => {
   });
 });
 
-// Global error handler (temporarily commented out for debugging)
-// app.use(errorHandler);
+// Global error handler
+app.use(errorHandler);
 
 // Graceful shutdown handling
 process.on('SIGTERM', () => {

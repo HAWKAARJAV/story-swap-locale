@@ -152,7 +152,21 @@ const Register = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-3">
+              {/* Demo Note */}
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-xs text-amber-800">
+                  💡 <strong>Demo Mode:</strong> Try existing demo accounts on the{" "}
+                  <Link 
+                    to="/login" 
+                    className="text-amber-900 hover:text-amber-700 font-medium underline"
+                  >
+                    login page
+                  </Link>{" "}
+                  instead of creating new accounts.
+                </p>
+              </div>
+              
               <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link 

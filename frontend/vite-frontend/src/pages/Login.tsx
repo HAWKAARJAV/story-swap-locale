@@ -61,6 +61,48 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
+              {/* Demo Credentials Section */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="text-sm font-semibold text-blue-900 mb-2">🎯 Demo Credentials</h3>
+                <div className="space-y-2 text-xs">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="font-medium text-blue-800">Admin:</p>
+                      <p className="text-blue-700">admin@example.com</p>
+                      <p className="text-blue-700">test1234</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-blue-800">User:</p>
+                      <p className="text-blue-700">rita@example.com</p>
+                      <p className="text-blue-700">test1234</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => { setEmail("admin@example.com"); setPassword("test1234"); }}
+                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
+                    >
+                      Use Admin
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setEmail("rita@example.com"); setPassword("test1234"); }}
+                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
+                    >
+                      Use Rita
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setEmail("sam@example.com"); setPassword("test1234"); }}
+                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
+                    >
+                      Use Sam
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
