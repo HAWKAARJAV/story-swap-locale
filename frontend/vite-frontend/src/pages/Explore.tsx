@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { MapPin, Filter, Search, Eye, Heart, Share2, Loader2, Map } from "lucide-react";
+import { MapPin, Filter, Search, Eye, Heart, Share2, Loader2, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
 import { apiService, Story } from "@/lib/api";
-import { handleImageError, avatarPlaceholder } from "@/utils/imageUtils";
+import { handleImageError, avatarPlaceholder, storyImages } from "@/utils/imageUtils";
+import Map from "@/components/Map";
+import { getLocationCoordinates, calculateCenter, calculateZoom, LocationCoordinates } from "@/utils/locationUtils";
 
 const Explore = () => {
   const [stories, setStories] = useState<Story[]>([]);
@@ -15,10 +16,18 @@ const Explore = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showMap, setShowMap] = useState(false);
+  const [mapCenter, setMapCenter] = useState<LocationCoordinates>({ lat: 39.8283, lng: -98.5795 });
+  const [mapZoom, setMapZoom] = useState(4);
+  const [mapMarkers, setMapMarkers] = useState<Array<{
+    position: LocationCoordinates;
+    title: string;
+    content: string;
+  }>>([]);
 
   useEffect(() => {
     fetchStories();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchStories = async () => {
     setLoading(true);
@@ -30,9 +39,61 @@ const Explore = () => {
       setError(response.error);
     } else if (response.data) {
       setStories(response.data.stories);
+      updateMapData(response.data.stories);
     }
     
     setLoading(false);
+  };
+
+  const updateMapData = (storyList: Story[]) => {
+    const validLocations: LocationCoordinates[] = [];
+    const markers: Array<{
+      position: LocationCoordinates;
+      title: string;
+      content: string;
+    }> = [];
+
+    storyList.forEach((story, index) => {
+      // Try to get coordinates from story location
+      let coordinates = null;
+      
+      if (story.location?.coordinates) {
+        coordinates = {
+          lat: story.location.coordinates[1], // GeoJSON format: [lng, lat]
+          lng: story.location.coordinates[0]
+        };
+      } else if (story.location?.address?.formatted) {
+        coordinates = getLocationCoordinates(story.location.address.formatted);
+      }
+
+      if (coordinates) {
+        validLocations.push(coordinates);
+        markers.push({
+          position: coordinates,
+          title: story.title,
+          content: `
+            <div class="p-2 max-w-xs">
+              <h3 class="font-semibold text-sm mb-1">${story.title}</h3>
+              <p class="text-xs text-gray-600 mb-2">${story.content.snippet?.substring(0, 100) || 'No description available'}...</p>
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <span>by ${story.author.displayName}</span>
+                <div class="flex space-x-2">
+                  <span>❤️ ${story.engagement?.likes || 0}</span>
+                  <span>💬 ${story.engagement?.comments || 0}</span>
+                </div>
+              </div>
+            </div>
+          `
+        });
+      }
+    });
+
+    if (validLocations.length > 0) {
+      setMapCenter(calculateCenter(validLocations));
+      setMapZoom(calculateZoom(validLocations));
+    }
+
+    setMapMarkers(markers);
   };
 
   const filteredStories = stories.filter(story => {
@@ -54,16 +115,15 @@ const Explore = () => {
                 Discover authentic local experiences from storytellers around the world
               </p>
             </div>
-            <Link to="/map">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10 hover:text-white"
-              >
-                <Map className="mr-2 h-5 w-5" />
-                View Map
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white/30 text-white hover:bg-white/10 hover:text-white"
+              onClick={() => setShowMap(!showMap)}
+            >
+              <MapIcon className="mr-2 h-5 w-5" />
+              {showMap ? 'Hide Map' : 'Show Map'}
+            </Button>
           </div>
         </div>
       </div>
@@ -97,19 +157,28 @@ const Explore = () => {
         </div>
 
         {/* Map Placeholder */}
-        <Card className="mb-8">
-          <CardContent className="p-0">
-            <div className="h-64 bg-gradient-card flex items-center justify-center rounded-lg">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Interactive Map</h3>
-                <p className="text-muted-foreground">Map integration coming soon - explore stories visually</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stories Grid */}
+        {/* Interactive Map */}
+        {showMap && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MapPin className="h-5 w-5 mr-2" />
+                Story Locations
+              </CardTitle>
+              <CardDescription>
+                Click on markers to see story details • {filteredStories.length} stories shown
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-[400px] p-4">
+              <Map
+                center={mapCenter}
+                zoom={mapZoom}
+                markers={mapMarkers}
+                className="rounded-lg"
+              />
+            </CardContent>
+          </Card>
+        )}        {/* Stories Grid */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 animate-spin" />
@@ -122,64 +191,92 @@ const Explore = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredStories.map((story) => (
-              <Card key={story._id} className="story-card overflow-hidden">
-                <div className="relative">
-                  <img 
-                    src={story.author.avatar?.url || avatarPlaceholder} 
-                    alt={story.author.displayName}
-                    className="w-full h-48 object-cover"
-                    onError={handleImageError}
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge variant="secondary" className="bg-white/90 text-foreground">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {story.location.address.city}
-                    </Badge>
-                  </div>
-                </div>
-                
-                <CardHeader>
-                  <CardTitle className="text-lg">{story.title}</CardTitle>
-                  <CardDescription>
-                    {story.content.snippet}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-muted-foreground">by {story.author.displayName}</span>
-                    <div className="flex space-x-2">
-                      {story.tags.slice(0, 2).map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
+            {filteredStories.map((story, index) => {
+              // Get a demo image for the story - rotate through available images
+              const storyImage = Object.values(storyImages)[index % Object.values(storyImages).length];
+              
+              return (
+                <Card key={story._id} className="story-card overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative">
+                    <img 
+                      src={storyImage} 
+                      alt={story.title}
+                      className="w-full h-48 object-cover"
+                      onError={handleImageError}
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="secondary" className="bg-white/90 text-foreground">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {story.location.address.city}
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                      <div className="flex items-center space-x-2 text-white">
+                        <div className="flex items-center bg-black/50 rounded-full px-2 py-1">
+                          <Heart className="h-3 w-3 mr-1" />
+                          <span className="text-xs">{story.engagement?.likes || 0}</span>
+                        </div>
+                        <div className="flex items-center bg-black/50 rounded-full px-2 py-1">
+                          <Eye className="h-3 w-3 mr-1" />
+                          <span className="text-xs">{story.engagement?.views || 0}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-4 text-sm text-muted-foreground">
-                      <span className="flex items-center">
-                        <Heart className="h-4 w-4 mr-1" />
-                        {story.engagement.likes}
-                      </span>
-                      <span className="flex items-center">
-                        <Eye className="h-4 w-4 mr-1" />
-                        {story.engagement.views}
-                      </span>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg line-clamp-2">{story.title}</CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {story.content.snippet}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <img 
+                          src={story.author.avatar?.url || avatarPlaceholder} 
+                          alt={story.author.displayName}
+                          className="w-6 h-6 rounded-full object-cover"
+                          onError={handleImageError}
+                        />
+                        <span className="text-sm text-muted-foreground">{story.author.displayName}</span>
+                      </div>
+                      <div className="flex space-x-2">
+                        {story.tags.slice(0, 2).map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {story.tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{story.tags.length - 2}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Share2 className="h-4 w-4" />
+                    <div className="flex items-center justify-between">
+                      <div className="flex space-x-4 text-sm text-muted-foreground">
+                        <button className="flex items-center hover:text-primary transition-colors">
+                          <Heart className="h-4 w-4 mr-1" />
+                          {story.engagement?.likes || 0}
+                        </button>
+                        <button className="flex items-center hover:text-primary transition-colors">
+                          <Share2 className="h-4 w-4 mr-1" />
+                          Share
+                        </button>
+                      </div>
+                      
+                      <Button size="sm" variant="outline">
+                        <Eye className="h-4 w-4 mr-1" />
+                        Read
                       </Button>
-                      <Button size="sm">Read Story</Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 

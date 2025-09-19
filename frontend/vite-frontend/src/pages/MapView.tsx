@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Eye, Heart, MessageCircle } from "lucide-react";
-import GoogleMap from "@/components/GoogleMap";
+import Map from "@/components/Map";
 import { getLocationCoordinates, calculateCenter, calculateZoom, LocationCoordinates } from "@/utils/locationUtils";
 import { storyImages, handleImageError } from "@/utils/imageUtils";
 
@@ -161,7 +161,7 @@ const MapView = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-[500px] p-4">
-                <GoogleMap
+                <Map
                   center={mapCenter}
                   zoom={mapZoom}
                   markers={markers}

@@ -2,7 +2,10 @@
 // All environment variables must be prefixed with VITE_ to be accessible in the client
 
 export const config = {
-  // Google Maps Configuration
+  // MapTiler Configuration (primary map provider)
+  maptilerApiKey: import.meta.env.VITE_MAPTILER_API_KEY || '',
+  
+  // Google Maps Configuration (fallback)
   googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
   
   // API Configuration
@@ -20,7 +23,7 @@ export const config = {
 // Type-safe environment variable validation
 export const validateEnvironment = () => {
   const requiredVars = {
-    googleMapsApiKey: config.googleMapsApiKey,
+    maptilerApiKey: config.maptilerApiKey,
   };
 
   const missingVars = Object.entries(requiredVars)
@@ -31,7 +34,7 @@ export const validateEnvironment = () => {
     console.warn(
       `Missing environment variables: ${missingVars.join(', ')}.\n` +
       'Please check your .env file and ensure all required variables are set.\n' +
-      'See docs/GOOGLE_MAPS_SETUP.md for setup instructions.'
+      'MapTiler API key is required for map functionality.'
     );
   }
 
