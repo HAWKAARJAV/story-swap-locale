@@ -72,7 +72,12 @@ app.use(speedLimiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://localhost:5173'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -123,7 +128,7 @@ app.use(errorHandler);
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received. Shutting down gracefully...');
-  mongoose.connection.close(() => {
+  mongoose.connection.close().then(() => {
     logger.info('MongoDB connection closed.');
     process.exit(0);
   });
@@ -131,7 +136,7 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   logger.info('SIGINT received. Shutting down gracefully...');
-  mongoose.connection.close(() => {
+  mongoose.connection.close().then(() => {
     logger.info('MongoDB connection closed.');
     process.exit(0);
   });

@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, BookOpen, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Gradient */}
@@ -33,16 +37,27 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button size="lg" className="btn-glow bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 h-auto">
+            <Button 
+              size="lg" 
+              className="btn-glow bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 h-auto"
+              onClick={() => navigate('/explore')}
+            >
               <MapPin className="mr-2 h-5 w-5" />
               Start Exploring
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             
-            <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">
-              <BookOpen className="mr-2 h-5 w-5" />
-              Share Your Story
-            </Button>
+            {user && (
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-orange-500 hover:bg-white/10 hover:text-orange-400 text-lg px-8 py-4 h-auto"
+                onClick={() => navigate('/submit')}
+              >
+                <BookOpen className="mr-2 h-5 w-5" />
+                Share Your Story
+              </Button>
+            )}
           </div>
 
           {/* Stats */}

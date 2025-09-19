@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Heart, MessageCircle, Lock, Unlock, Star } from "lucide-react";
+import { MapPin, Heart, MessageCircle, Star } from "lucide-react";
 import { useState } from "react";
+import { handleImageError, avatarPlaceholder } from "@/utils/imageUtils";
 
 interface StoryCardProps {
   story: {
@@ -43,6 +44,7 @@ const StoryCard = ({ story, onSwapToUnlock }: StoryCardProps) => {
             src={story.image} 
             alt={story.title}
             className="w-full h-full object-cover"
+            onError={handleImageError}
           />
         </div>
       )}
@@ -51,7 +53,7 @@ const StoryCard = ({ story, onSwapToUnlock }: StoryCardProps) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <Avatar className="h-10 w-10 border-2 border-primary/20">
-            <AvatarImage src={story.author.avatar} />
+            <AvatarImage src={story.author.avatar || avatarPlaceholder} />
             <AvatarFallback className="bg-primary/10 text-primary">
               {story.author.name.split(' ').map(n => n[0]).join('')}
             </AvatarFallback>
@@ -69,19 +71,10 @@ const StoryCard = ({ story, onSwapToUnlock }: StoryCardProps) => {
             </div>
           </div>
         </div>
-
-        {/* Lock Status */}
-        <div className="text-muted-foreground">
-          {story.isLocked ? (
-            <Lock className="h-4 w-4" />
-          ) : (
-            <Unlock className="h-4 w-4 text-primary" />
-          )}
-        </div>
       </div>
 
       {/* Story Content */}
-      <div className={`story-unlock ${story.isLocked ? 'locked' : ''}`}>
+      <div>
         <h3 className="text-lg font-semibold mb-3 line-clamp-2">
           {story.title}
         </h3>
@@ -127,30 +120,14 @@ const StoryCard = ({ story, onSwapToUnlock }: StoryCardProps) => {
           </Button>
         </div>
 
-        {story.isLocked ? (
-          <Button 
-            size="sm" 
-            onClick={onSwapToUnlock}
-            className="btn-glow"
-          >
-            <Lock className="h-3 w-3 mr-2" />
-            Swap to Unlock
-          </Button>
-        ) : (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="text-primary hover:text-primary/80"
-          >
-            Read Full Story
-          </Button>
-        )}
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="text-primary hover:text-primary/80"
+        >
+          Read Full Story
+        </Button>
       </div>
-
-      {/* Locked Overlay */}
-      {story.isLocked && (
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80 pointer-events-none rounded-2xl" />
-      )}
     </div>
   );
 };

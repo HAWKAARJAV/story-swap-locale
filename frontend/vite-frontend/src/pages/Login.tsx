@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,15 +22,16 @@ const Login = () => {
     
     // Simulate login
     setTimeout(() => {
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify({
+      const userData = {
         id: "1",
+        username: email.split('@')[0],
+        displayName: email.split('@')[0],
         email,
-        name: email.split('@')[0],
-        avatar: "/placeholder.svg",
-        storiesContributed: 0,
-        badges: []
-      }));
+        avatar: "/placeholder.svg"
+      };
+      
+      const token = "fake-jwt-token-" + Date.now();
+      login(userData, token);
       
       toast({
         title: "Welcome back!",
