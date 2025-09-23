@@ -22,3 +22,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database data (but keep models and scripts)
+/database/data/
+*.db
+*.sqlite
+
+# Cache and temporary files
+.cache/
+.tmp/
+temp/
+
+# Mac specific
+.DS_Store
+
+# Backup files
+README-OLD.md
+
+# Important: Keep these files tracked for proper setup
+!frontend/vite-frontend/.env
+!backend/.env
+!docs/
+!*.sh
+!package.json
+!package-lock.json

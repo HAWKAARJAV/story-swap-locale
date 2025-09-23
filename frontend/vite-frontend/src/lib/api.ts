@@ -198,7 +198,96 @@ class ApiService {
     const queryString = searchParams.toString();
     const endpoint = `/stories${queryString ? `?${queryString}` : ''}`;
     
-    return this.request(endpoint);
+    return this.request<{ stories: Story[]; pagination: Pagination; filters: Filters }>(endpoint);
+  }
+
+  private getMockStories(): Partial<Story>[] {
+    return [
+      {
+        _id: '1',
+        title: 'My Hidden Coffee Spot in Brooklyn',
+        content: {
+          type: 'story',
+          text: { body: 'Found this amazing little café that serves the best cortado I\'ve ever had...' },
+          snippet: 'Found this amazing little café that serves the best cortado I\'ve ever had...'
+        },
+        author: {
+          _id: 'user1',
+          username: 'sarah_nyc',
+          displayName: 'Sarah M.',
+          avatar: { url: '/placeholder.svg' },
+          homeCity: 'Brooklyn',
+          stats: { storiesPublished: 12, storiesUnlocked: 8, swapsCompleted: 5, likes: 156, followers: 89, following: 45 }
+        },
+        location: {
+          _id: 'loc1',
+          coordinates: { type: 'Point', coordinates: [-73.9442, 40.6782] },
+          address: { formatted: 'Brooklyn, NY', city: 'Brooklyn', state: 'NY', country: 'USA' }
+        },
+        tags: ['Coffee', 'Hidden Gems', 'NYC'],
+        status: 'published',
+        visibility: 'public',
+        engagement: { likes: 23, comments: 8, views: 156, shares: 5, unlocks: 12, saves: 7 },
+        createdAt: '2024-01-15T10:30:00Z',
+        updatedAt: '2024-01-15T10:30:00Z'
+      },
+      {
+        _id: '2',
+        title: 'The Street Art Tour I Created',
+        content: {
+          type: 'story',
+          text: { body: 'After years of exploring murals in my neighborhood, I decided to create my own walking tour...' },
+          snippet: 'After years of exploring murals in my neighborhood, I decided to create my own walking tour...'
+        },
+        author: {
+          _id: 'user2',
+          username: 'mike_atx',
+          displayName: 'Mike D.',
+          avatar: { url: '/placeholder.svg' },
+          homeCity: 'Austin',
+          stats: { storiesPublished: 8, storiesUnlocked: 12, swapsCompleted: 7, likes: 234, followers: 156, following: 67 }
+        },
+        location: {
+          _id: 'loc2',
+          coordinates: { type: 'Point', coordinates: [-97.7431, 30.2672] },
+          address: { formatted: 'Austin, TX', city: 'Austin', state: 'TX', country: 'USA' }
+        },
+        tags: ['Art', 'Walking Tours', 'Community'],
+        status: 'published',
+        visibility: 'public',
+        engagement: { likes: 45, comments: 12, views: 234, shares: 8, unlocks: 18, saves: 11 },
+        createdAt: '2024-01-10T14:20:00Z',
+        updatedAt: '2024-01-10T14:20:00Z'
+      },
+      {
+        _id: '3',
+        title: 'Grandfather\'s Secret Fishing Spot',
+        content: {
+          type: 'story',
+          text: { body: 'Every summer, my grandfather would take me to this hidden lake in the mountains...' },
+          snippet: 'Every summer, my grandfather would take me to this hidden lake in the mountains...'
+        },
+        author: {
+          _id: 'user3',
+          username: 'jenny_sf',
+          displayName: 'Jenny K.',
+          avatar: { url: '/placeholder.svg' },
+          homeCity: 'San Francisco',
+          stats: { storiesPublished: 15, storiesUnlocked: 6, swapsCompleted: 9, likes: 189, followers: 134, following: 89 }
+        },
+        location: {
+          _id: 'loc3',
+          coordinates: { type: 'Point', coordinates: [-122.4194, 37.7749] },
+          address: { formatted: 'San Francisco, CA', city: 'San Francisco', state: 'CA', country: 'USA' }
+        },
+        tags: ['Family', 'Nature', 'Memories'],
+        status: 'published',
+        visibility: 'public',
+        engagement: { likes: 67, comments: 15, views: 189, shares: 12, unlocks: 24, saves: 15 },
+        createdAt: '2024-01-08T09:15:00Z',
+        updatedAt: '2024-01-08T09:15:00Z'
+      }
+    ];
   }
 
   async getStoryById(id: string): Promise<ApiResponse<Story>> {
