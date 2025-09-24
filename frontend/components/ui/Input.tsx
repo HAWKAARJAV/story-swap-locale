@@ -38,16 +38,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       "focus:outline-none focus:ring-2 focus:ring-offset-0",
       // Default variant
       variant === 'default' && [
-        "bg-white/10 backdrop-blur-sm border-white/20 text-white",
-        "focus:ring-primary-400/50 focus:border-primary-400/50",
-        "hover:border-white/30",
+        "bg-white/5 backdrop-blur-sm border-primary-300/20 text-foreground",
+        "focus:ring-primary-400/40 focus:border-primary-400/40",
+        "hover:border-primary-300/30",
         error && "border-red-400/50 focus:ring-red-400/50 focus:border-red-400/50"
       ],
       // Ghost variant
       variant === 'ghost' && [
-        "bg-transparent border-gray-200 text-gray-900",
+        "bg-transparent border-gray-200 text-gray-900 dark:text-gray-100 dark:border-gray-700",
         "focus:ring-primary-500 focus:border-primary-500",
-        "hover:border-gray-300",
+        "hover:border-primary-300",
         error && "border-red-500 focus:ring-red-500 focus:border-red-500"
       ],
       icon && "pl-11",

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,6 +8,20 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  body {
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  
+  .font-display {
+    font-family: var(--font-display);
+  }
   :root {
     /* Base Colors - Warm cream and deep navy */
     --background: 44 100% 97%; /* Warm cream background */
@@ -45,6 +60,27 @@ All colors MUST be HSL.
     --border: 44 20% 90%;
     --input: 44 20% 90%;
     --ring: 14 100% 60%;
+    
+    /* City Theme Gradients - Refined */
+    --delhi-gradient: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+    --mumbai-gradient: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    --chennai-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --jaipur-gradient: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+    --agra-gradient: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    
+    /* Glass morphism - Enhanced */
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+    
+    /* Typography */
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-display: 'Playfair Display', serif;
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     /* Design system tokens */
     --radius: 0.75rem;

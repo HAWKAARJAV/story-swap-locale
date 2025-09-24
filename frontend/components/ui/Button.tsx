@@ -31,13 +31,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     const variants = {
-      default: "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg hover:shadow-xl",
-      destructive: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl",
-      outline: "border border-white/20 bg-transparent text-white hover:bg-white/5 focus:ring-primary-500",
-      secondary: "bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 shadow-lg hover:shadow-xl",
-      ghost: "hover:bg-white/10 text-white focus:ring-primary-500",
-      link: "text-primary-400 underline-offset-4 hover:underline focus:ring-primary-500",
-      gradient: "bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:from-primary-600 hover:to-secondary-600 focus:ring-primary-500 shadow-lg hover:shadow-xl"
+      default: "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-md hover:shadow-lg transition-all",
+      destructive: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-md hover:shadow-lg transition-all",
+      outline: "border border-primary-300/20 bg-transparent text-primary-500 hover:bg-primary-50/10 focus:ring-primary-500 transition-all",
+      secondary: "bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 shadow-md hover:shadow-lg transition-all",
+      ghost: "hover:bg-primary-50/10 text-primary-500 focus:ring-primary-500 transition-all",
+      link: "text-primary-500 underline-offset-4 hover:underline focus:ring-primary-500 transition-all",
+      gradient: "bg-gradient-to-r from-primary-500 to-accent-500 text-white hover:from-primary-600 hover:to-accent-600 focus:ring-primary-500 shadow-md hover:shadow-lg transition-all"
     };
 
     const sizes = {

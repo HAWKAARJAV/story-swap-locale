@@ -75,7 +75,7 @@ export default function Navigation() {
       <motion.nav 
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          isScrolled ? "glass backdrop-blur-xl border-b border-white/10" : "bg-transparent"
+          isScrolled ? "bg-background/70 backdrop-blur-xl border-b border-primary-200/10 shadow-sm" : "bg-transparent"
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}

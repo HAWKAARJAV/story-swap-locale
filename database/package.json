@@ -4,6 +4,7 @@
   "description": "Database models, configurations, and scripts for Story Swap application",
   "main": "database.js",
   "scripts": {
+    "start": "node database.js",
     "seed": "node seedDatabase.js",
     "verify": "node verifyData.js",
     "migrate": "node scripts/seedData.js"

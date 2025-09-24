@@ -58,9 +58,9 @@ export default function StoryCard({
   const isLikedByUser = user ? story.likedBy.includes(user._id) : false;
   
   const cardVariants = {
-    default: "bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700",
-    compact: "bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700",
-    featured: "bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-xl hover:shadow-2xl border border-primary-200 dark:border-gray-600"
+    default: "bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg border border-gray-100 dark:border-gray-700",
+    compact: "bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow border border-gray-100 dark:border-gray-700",
+    featured: "bg-gradient-to-br from-primary-50/30 to-accent-50/30 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg hover:shadow-xl border border-primary-100 dark:border-gray-600"
   };
 
   const sizeVariants = {
@@ -87,13 +87,13 @@ export default function StoryCard({
 
       {/* Locked Overlay */}
       {story.isLocked && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
           <div className="text-center text-white">
-            <Lock className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
+            <Lock className="w-12 h-12 mx-auto mb-4 text-accent-400" />
             <p className="font-semibold mb-2">Story Locked</p>
             <p className="text-sm text-gray-300 mb-4">{story.lockReason || 'Share a story to unlock'}</p>
             <motion.button
-              className="px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full text-white font-medium hover:from-primary-600 hover:to-secondary-600 transition-all duration-200"
+              className="px-6 py-2 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full text-white font-medium hover:from-primary-600 hover:to-accent-600 transition-all duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onUnlock?.(story._id)}
