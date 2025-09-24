@@ -23,7 +23,8 @@ const adminRoutes = require('./routes/admin');
 const trailRoutes = require('./routes/trails');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Connect to MongoDB
 connectDB();
@@ -70,14 +71,45 @@ const speedLimiter = slowDown({
 app.use(generalLimiter);
 app.use(speedLimiter);
 
-// CORS configuration
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
+// Dynamic CORS configuration
+const getAllowedOrigins = () => {
+  const origins = [
+    process.env.FRONTEND_URL || 'http://localhost:8080',
+    process.env.FRONTEND_URL_NETWORK,
     'http://localhost:8080',
     'http://localhost:8081',
+    'http://localhost:3000',
     'http://localhost:5173'
-  ],
+  ].filter(Boolean);
+  
+  // Get network IP dynamically
+  const os = require('os');
+  const networkInterfaces = os.networkInterfaces();
+  const networkIP = Object.values(networkInterfaces)
+    .flat()
+    .find(iface => iface?.family === 'IPv4' && !iface.internal)?.address;
+  
+  if (networkIP) {
+    origins.push(`http://${networkIP}:8080`, `http://${networkIP}:8081`);
+  }
+  
+  return origins;
+};
+
+app.use(cors({
+  origin: function (origin, callback) {
+    const allowedOrigins = getAllowedOrigins();
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    // Allow any local network IP on ports 8080/8081
+    if (/^http:\/\/(localhost|127\.0\.0\.1|\d+\.\d+\.\d+\.\d+):(808[01]|3000|5173)$/.test(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -142,9 +174,20 @@ process.on('SIGINT', () => {
   });
 });
 
-app.listen(PORT, () => {
-  logger.info(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+app.listen(PORT, HOST, () => {
+  logger.info(`🚀 Server running on ${HOST}:${PORT} in ${process.env.NODE_ENV} mode`);
   logger.info(`📚 API Documentation available at http://localhost:${PORT}/api/docs`);
+  
+  // Get network IP dynamically
+  const os = require('os');
+  const networkInterfaces = os.networkInterfaces();
+  const networkIP = Object.values(networkInterfaces)
+    .flat()
+    .find(iface => iface?.family === 'IPv4' && !iface.internal)?.address;
+  
+  if (networkIP) {
+    logger.info(`🌐 Network access available at http://${networkIP}:${PORT}/api/docs`);
+  }
 });
 
 module.exports = app;

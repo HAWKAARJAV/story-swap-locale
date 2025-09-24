@@ -1,4 +1,26 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/v1`;
+// Smart API URL detection - works for localhost and network access
+const getApiBaseUrl = () => {
+  // If explicit URL is set, use it
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && envUrl.trim()) return `${envUrl}/api/v1`;
+  
+  const hostname = window.location.hostname;
+  
+  // If accessing via network IP (10.x.x.x, 192.168.x.x, 172.16-31.x.x)
+  if (hostname.match(/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/)) {
+    return `http://${hostname}:3001/api/v1`;
+  }
+  
+  // If accessing via localhost or 127.0.0.1
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3001/api/v1';
+  }
+  
+  // Default fallback
+  return 'http://localhost:3001/api/v1';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface Story {
   _id: string;
@@ -160,10 +182,12 @@ export interface ApiResponse<T> {
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
     try {
+      const url = `${API_BASE_URL}${endpoint}`;
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
           ...options?.headers,
