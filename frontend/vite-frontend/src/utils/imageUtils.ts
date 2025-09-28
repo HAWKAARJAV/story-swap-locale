@@ -18,17 +18,19 @@ export const imageAssets = {
   communityFood: communityFoodImage,
 };
 
-// Array of reliable demo images with better fallbacks
+// Array of high-quality, engaging demo images
 export const demoImages = [
   imageAssets.jazzClub,
   imageAssets.parisCafe,
   imageAssets.communityFood,
-  // Using more reliable sources
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
-  "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=250&fit=crop",
-  "https://images.unsplash.com/photo-1504113888839-1c8eb50233d7?w=400&h=250&fit=crop",
-  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
-  "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400&h=250&fit=crop",
+  // Premium travel and cultural imagery
+  "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=400&fit=crop&q=80", // Stunning beach scene
+  "https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=600&h=400&fit=crop&q=80", // Vibrant street market
+  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=400&fit=crop&q=80", // Colorful cultural festival
+  "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&h=400&fit=crop&q=80", // Dramatic architecture
+  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop&q=80", // Food culture
+  "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop&q=80", // City skyline
+  "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop&q=80", // Local tradition
 ];
 
 // Get a demo image by index with fallback
@@ -37,12 +39,24 @@ export const getDemoImage = (index: number): string => {
   return demoImages[imageIndex];
 };
 
-// Image optimization utility
+// Enhanced image optimization utility
 export const getOptimizedImageUrl = (url: string, options: {
   width?: number;
   height?: number;
   format?: 'webp' | 'jpg' | 'png';
+  quality?: number;
+  blur?: number;
 } = {}): string => {
+  // Default options for better quality
+  const defaults = {
+    width: 600,
+    height: 400,
+    format: 'webp' as const,
+    quality: 85,
+  };
+  
+  const opts = { ...defaults, ...options };
+  
   // If it's a local asset, return as-is
   if (url.startsWith('/') || url.startsWith('data:')) {
     return url;
@@ -51,23 +65,29 @@ export const getOptimizedImageUrl = (url: string, options: {
   // If it's an Unsplash URL, we can optimize it
   if (url.includes('unsplash.com')) {
     const urlObj = new URL(url);
-    if (options.width) urlObj.searchParams.set('w', options.width.toString());
-    if (options.height) urlObj.searchParams.set('h', options.height.toString());
-    if (options.format) urlObj.searchParams.set('fm', options.format);
+    urlObj.searchParams.set('w', opts.width.toString());
+    urlObj.searchParams.set('h', opts.height.toString());
+    urlObj.searchParams.set('fm', opts.format);
+    urlObj.searchParams.set('q', opts.quality.toString());
     urlObj.searchParams.set('fit', 'crop');
-    urlObj.searchParams.set('crop', 'center');
+    urlObj.searchParams.set('crop', 'entropy'); // Better cropping algorithm
+    if (opts.blur) urlObj.searchParams.set('blur', opts.blur.toString());
     return urlObj.toString();
   }
 
   return url;
 };
 
-// Story images with reliable sources
+// Story images with high-quality sources
 export const storyImages = {
   brooklyn: imageAssets.jazzClub,
-  austin: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=250&fit=crop",
-  tahoe: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
-  seattle: "https://images.unsplash.com/photo-1541360943-e87b5b2717b3?w=400&h=250&fit=crop",
+  austin: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=400&fit=crop&q=85",
+  delhi: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=600&h=400&fit=crop&q=85",
+  mumbai: "https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=600&h=400&fit=crop&q=85",
+  tokyo: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=600&h=400&fit=crop&q=85",
+  paris: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop&q=85",
+  tahoe: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&q=85",
+  seattle: "https://images.unsplash.com/photo-1541360943-e87b5b2717b3?w=600&h=400&fit=crop&q=85",
   portland: imageAssets.parisCafe,
   miami: imageAssets.communityFood,
   denver: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop",

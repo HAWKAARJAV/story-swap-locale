@@ -8,159 +8,67 @@ import { useToast } from "@/hooks/use-toast";
 import StoryDetailDialog from "@/components/StoryDetailDialog";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { storyImages, handleImageError } from "@/utils/imageUtils";
-
-interface UserStory {
-  id: string;
-  title: string;
-  excerpt: string;
-  fullContent?: string;
-  location: string;
-  tags: string[];
-  likes: number;
-  comments: number;
-  views: number;
-  status: "published" | "draft" | "pending";
-  createdAt: string;
-  image?: string;
-}
+import { apiService, Story } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MyStories = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [stories, setStories] = useState<UserStory[]>([
-    {
-      id: "1",
-      title: "My Hidden Coffee Spot in Brooklyn",
-      excerpt: "Found this amazing little café that serves the best cortado I've ever had...",
-      fullContent: `Found this amazing little café that serves the best cortado I've ever had...
-
-It was a rainy Thursday morning when I first discovered "Bean & Gone," tucked away in a narrow alley between two residential buildings in Park Slope. The exterior is so unassuming that I'd walked past it dozens of times without noticing.
-
-The interior is cozy with just eight seats - four at the counter and two small tables. The owner, Maria, has been roasting her own beans for over fifteen years. She sources directly from small farms in Colombia and Guatemala, and you can taste the difference immediately.
-
-What makes this place special:
-• The cortado is perfectly balanced - not too milky, with the espresso still prominent
-• They only serve pastries from a local bakery that delivers fresh every morning  
-• Maria remembers everyone's order after just two visits
-• The wifi is fast, but there's an unspoken two-hour limit during busy times
-• They have a small shelf of books that customers can borrow or trade
-
-The prices are incredibly reasonable for NYC - $3.50 for a cortado that would cost $6 at a chain. They only accept cash, but there's an ATM around the corner.
-
-If you're planning to visit, the best times are mid-morning (9-11 AM) or late afternoon (3-5 PM). They close at 4 PM on weekdays and are closed weekends - Maria says this is to maintain work-life balance, which I deeply respect.
-
-This place has become my weekly ritual. Every Thursday, I grab my usual cortado and almond croissant, sit at the counter, and start my day right. It's these small discoveries that make living in Brooklyn so rewarding.`,
-      location: "Brooklyn, NY",
-      tags: ["Coffee", "Hidden Gems", "NYC"],
-      likes: 23,
-      comments: 8,
-      views: 156,
-      status: "published",
-      createdAt: "2024-03-15",
-      image: storyImages.brooklyn
-    },
-    {
-      id: "2",
-      title: "The Street Art Tour I Created",
-      excerpt: "After years of exploring murals in my neighborhood, I decided to create my own walking tour...",
-      fullContent: `After years of exploring murals in my neighborhood, I decided to create my own walking tour...
-
-Living in East Austin for five years, I've watched the street art scene evolve dramatically. What started as a few scattered pieces has become one of the most vibrant outdoor galleries in Texas. After countless solo walks documenting these works, I realized I had enough material for a proper tour.
-
-The "East Austin Mural Mile" covers 12 significant pieces across a 2-mile walking route:
-
-**Stop 1: The "Greetings from Austin" Mural**
-Location: South First & Annie Street
-This iconic postcard-style mural is perfect for photos. Created by Todd Sanders and Rylsee, it's been updated three times since 2010.
-
-**Stop 2: The Hope Outdoor Gallery Tribute**
-Location: East 6th Street
-When the original Hope Gallery closed, local artists recreated some of its most beloved pieces here. It's a beautiful homage to Austin's creative resilience.
-
-**Stop 3: The "You're My Butter Half" Mural**
-Location: Lamar & Barton Springs
-This playful piece by artist Mel has become a favorite for couples' photos. The message is simple but the execution is flawless.
-
-**Stops 4-12**: The tour continues through lesser-known gems, including political murals, abstract pieces, and community-collaborative works.
-
-What I've learned creating this tour:
-• Many murals have permission from property owners - it's not all "illegal" graffiti
-• Artists often return to touch up their work seasonally
-• The stories behind the art are just as important as the visuals
-• Property development threatens these spaces constantly
-
-I started leading this tour informally for friends, then began posting on social media. Now I have 200+ followers who join my monthly walks. No charge - I just love sharing these discoveries.
-
-The best part? Artists sometimes join us when they see the group. I've met the creators of half these murals through the tours, and their insights add incredible depth to the experience.
-
-If you're interested in joining the next tour, follow @EastAustinMurals on Instagram. We meet the first Saturday of each month at 10 AM at Radio Coffee on Barton Springs Road.`,
-      location: "Austin, TX",
-      tags: ["Art", "Walking Tours", "Community"],
-      likes: 45,
-      comments: 12,
-      views: 234,
-      status: "published",
-      createdAt: "2024-03-10",
-      image: storyImages.austin
-    },
-    {
-      id: "3",
-      title: "Grandfather's Secret Fishing Spot",
-      excerpt: "Draft story about the secluded lake where my grandfather taught me patience...",
-      fullContent: `Draft story about the secluded lake where my grandfather taught me patience...
-
-This is still a work in progress, but I wanted to capture these memories before they fade. Grandpa Joe passed away last year, and I'm only now ready to write about our special place.
-
-Hidden Creek Lake isn't on any tourist map. Located about 45 minutes from South Lake Tahoe, it requires a 2-mile hike through dense forest to reach. Grandpa discovered it in 1967 during a solo backpacking trip and kept it secret for over 50 years.
-
-He first brought me there when I was eight years old. I remember being frustrated that we weren't going to the "real" lake where all the other families went. But when we emerged from the trees and saw this pristine mountain lake, perfectly still and reflecting the surrounding peaks, I understood why he protected this place.
-
-The fishing rules according to Grandpa Joe:
-• Never take more than two fish
-• Always release the biggest catch
-• No radios or loud talking - "Fish have good hearing"
-• Pack out everything you bring in
-• Tell no one except family
-
-[This is where I need to add more details about our fishing techniques, the wildlife we saw, and the life lessons he taught me by that lake. I also want to include the story about the time we saw a family of deer drinking at the water's edge, and how Grandpa made me promise to never reveal the location to anyone outside the family.]
-
-I'm planning to hike back there this summer - it will be my first time without him. I hope I can find it again; his directions were always more about intuition than landmarks.
-
-This story needs more work, but it feels important to start getting these memories down. Maybe I'll finish it after my return visit.`,
-      location: "Lake Tahoe, CA",
-      tags: ["Family", "Nature", "Memories"],
-      likes: 0,
-      comments: 0,
-      views: 0,
-      status: "draft",
-      createdAt: "2024-03-18"
-    }
-  ]);
+  const { user } = useAuth();
+  const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Dialog states
-  const [selectedStory, setSelectedStory] = useState<UserStory | null>(null);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [storyToDelete, setStoryToDelete] = useState<UserStory | null>(null);
+  const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
+
+  // Fetch user's stories
+  useEffect(() => {
+    const fetchMyStories = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await apiService.getMyStories();
+        
+        if (response.error) {
+          setError(response.error);
+        } else if (response.data) {
+          setStories(response.data.stories);
+        }
+      } catch (err) {
+        setError('Failed to load your stories');
+        console.error('Error fetching my stories:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchMyStories();
+    }
+  }, [user]);
 
   // Handler functions
-  const handleViewStory = (story: UserStory) => {
+  const handleViewStory = (story: Story) => {
     setSelectedStory(story);
     setShowDetailDialog(true);
   };
 
-  const handleEditStory = (story: UserStory) => {
-    navigate(`/edit-story/${story.id}`);
+  const handleEditStory = (story: Story) => {
+    navigate(`/edit-story/${story._id}`);
   };
 
-  const handleDeleteStory = (story: UserStory) => {
+  const handleDeleteStory = (story: Story) => {
     setStoryToDelete(story);
     setShowDeleteDialog(true);
   };
 
   const confirmDeleteStory = () => {
     if (storyToDelete) {
-      setStories(stories.filter(story => story.id !== storyToDelete.id));
+      setStories(stories.filter(story => story._id !== storyToDelete._id));
       toast({
         title: "Story Deleted",
         description: `"${storyToDelete.title}" has been permanently deleted.`,
@@ -193,7 +101,7 @@ This story needs more work, but it feels important to start getting these memori
             <div>
               <h1 className="text-4xl font-bold mb-4">My Stories</h1>
               <p className="text-xl text-white/90">
-                Manage and track your published stories
+                {user ? `${user.displayName}'s published stories` : 'Manage and track your published stories'}
               </p>
             </div>
             <Button 
@@ -222,7 +130,7 @@ This story needs more work, but it feels important to start getting these memori
           <Card>
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-orange-500 mb-2">
-                {stories.reduce((sum, story) => sum + story.likes, 0)}
+                {stories.reduce((sum, story) => sum + story.engagement.likes, 0)}
               </div>
               <div className="text-sm text-muted-foreground">Total Likes</div>
             </CardContent>
@@ -230,7 +138,7 @@ This story needs more work, but it feels important to start getting these memori
           <Card>
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-blue-500 mb-2">
-                {stories.reduce((sum, story) => sum + story.views, 0)}
+                {stories.reduce((sum, story) => sum + story.engagement.views, 0)}
               </div>
               <div className="text-sm text-muted-foreground">Total Views</div>
             </CardContent>
@@ -245,111 +153,139 @@ This story needs more work, but it feels important to start getting these memori
           </Card>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading your stories...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4">
+              <h3 className="text-lg font-semibold mb-2">Unable to load stories</h3>
+              <p>{error}</p>
+            </div>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        )}
+
         {/* Stories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stories.map((story) => (
-            <Card key={story.id} className="story-card overflow-hidden hover:shadow-lg transition-shadow">
-              {story.image && (
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {stories.map((story) => (
+              <Card key={story._id} className="story-card overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
-                  <img 
-                    src={story.image} 
-                    alt={story.title}
-                    className="w-full h-48 object-cover"
-                    onError={handleImageError}
-                  />
+                  {/* Use a placeholder image since API stories might not have images */}
+                  <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <MapPin className="h-12 w-12 text-blue-500 opacity-50" />
+                  </div>
                   <div className="absolute top-4 right-4">
                     <Badge className={getStatusColor(story.status)}>
                       {story.status}
                     </Badge>
                   </div>
                 </div>
-              )}
-              
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg line-clamp-2">{story.title}</CardTitle>
-                  <div className="flex space-x-2 ml-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-1"
-                      onClick={() => handleEditStory(story)}
-                      title="Edit story"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-1 text-destructive hover:text-destructive"
-                      onClick={() => handleDeleteStory(story)}
-                      title="Delete story"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <CardDescription className="line-clamp-3">
-                  {story.excerpt}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPin className="h-3 w-3 mr-1" />
-                    {story.location}
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(story.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {story.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex space-x-4 text-sm text-muted-foreground">
-                    <span className="flex items-center">
-                      <Heart className="h-4 w-4 mr-1" />
-                      {story.likes}
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg line-clamp-2">{story.title}</CardTitle>
+                    <div className="flex space-x-2 ml-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1"
+                        onClick={() => handleEditStory(story)}
+                        title="Edit story"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1 text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteStory(story)}
+                        title="Delete story"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <CardDescription className="line-clamp-3">
+                    {story.content.snippet || story.content.text.body.substring(0, 150) + '...'}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {story.location.address.city}, {story.location.address.state}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(story.createdAt).toLocaleDateString()}
                     </span>
-                    <span className="flex items-center">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      {story.comments}
-                    </span>
-                    <span className="flex items-center">
-                      <Eye className="h-4 w-4 mr-1" />
-                      {story.views}
-                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {story.tags.length > 0 ? story.tags.map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    )) : (
+                      <Badge variant="outline" className="text-xs opacity-50">
+                        No tags
+                      </Badge>
+                    )}
                   </div>
                   
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => handleViewStory(story)}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-4 text-sm text-muted-foreground">
+                      <span className="flex items-center">
+                        <Heart className="h-4 w-4 mr-1" />
+                        {story.engagement.likes}
+                      </span>
+                      <span className="flex items-center">
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        {story.engagement.comments}
+                      </span>
+                      <span className="flex items-center">
+                        <Eye className="h-4 w-4 mr-1" />
+                        {story.engagement.views}
+                      </span>
+                    </div>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleViewStory(story)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {stories.length === 0 && (
+        {!loading && !error && stories.length === 0 && (
           <div className="text-center py-12">
             <div className="text-muted-foreground mb-4">
               <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <h3 className="text-xl font-semibold mb-2">No stories yet</h3>
-              <p>Start sharing your adventures with the community!</p>
+              <p>
+                {user?.displayName === 'John Doe' || user?.displayName === 'New User' 
+                  ? 'You haven\'t uploaded any stories yet. Start sharing your adventures!'
+                  : `${user?.displayName || 'You'} haven't uploaded any stories to this account yet.`
+                }
+              </p>
             </div>
             <Button onClick={() => navigate('/submit')} className="mt-4">
               Write Your First Story

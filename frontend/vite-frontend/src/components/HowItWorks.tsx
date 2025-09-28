@@ -1,90 +1,93 @@
-import { MapPin, BookOpen, Users, Trophy } from "lucide-react";
+import { MapPin, BookOpen, Users, Trophy, Sparkles, ArrowRight } from "lucide-react";
 
 const HowItWorks = () => {
   const steps = [
     {
       icon: MapPin,
-      title: "Drop Your Pin",
-      description: "Share a story tied to a specific location - a hidden café, a street corner memory, or a local tradition.",
-      color: "from-blue-500 to-cyan-400"
+      title: "Share Your Adventure",
+      description: "Drop a pin on the map and share your unique story about that place. Every location has hidden gems waiting to be discovered.",
+      image: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      gradient: "from-primary to-primary/80"
     },
     {
       icon: BookOpen,
-      title: "Swap to Unlock",
-      description: "To read others' stories, you need to contribute one yourself. Fair exchange builds our community.",
-      color: "from-primary to-purple-500"
+      title: "Unlock Stories",
+      description: "Exchange your story to unlock others' experiences. Discover local secrets, hidden spots, and authentic travel tales from fellow explorers.",
+      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      gradient: "from-secondary to-secondary/80"
     },
     {
       icon: Users,
-      title: "Connect & Discover",
-      description: "Meet fellow explorers, locals with insider knowledge, and travelers with unique perspectives.",
-      color: "from-accent to-yellow-400"
-    },
-    {
-      icon: Trophy,
-      title: "Earn Your Badges",
-      description: "Become a Story Master, City Explorer, or Community Champion as you contribute and engage.",
-      color: "from-green-400 to-emerald-500"
+      title: "Connect Globally",
+      description: "Join a vibrant community of travelers and locals. Share experiences, get recommendations, and build lasting connections worldwide.",
+      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      gradient: "from-accent to-accent/80"
     }
   ];
 
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/10 rounded-full blur-3xl"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
-          <div className="inline-block px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary-glow text-xs font-medium mb-6 backdrop-blur-sm">
-            <span className="font-heading tracking-wider">THE PROCESS</span>
-          </div>
-          
-          <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
-            How <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent">Story Swap</span> Works
+    <section className="py-24 bg-muted/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-20 animate-fade-in">
+          <h2 className="text-5xl font-bold mb-6 text-secondary">
+            How It Works
           </h2>
-          
-          <p className="font-body text-lg text-foreground/80 max-w-2xl mx-auto">
-            Join a global community of storytellers and discover the hidden narratives that make every place special.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Join thousands of travelers and locals sharing authentic stories. 
+            Discover hidden gems and create meaningful connections through the art of storytelling.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-          {/* Connection line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-          
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {steps.map((step, index) => (
             <div 
               key={index}
-              className="relative group"
+              className="group card-tilt bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-700 overflow-hidden animate-slide-up border border-muted/20"
+              style={{ animationDelay: `${index * 0.3}s` }}
             >
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-1">
-                {/* Step Number */}
-                <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-primary to-accent text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg">
+              {/* Beautiful Image Header with Parallax Effect */}
+              <div className="relative h-72 overflow-hidden">
+                <img 
+                  src={step.image} 
+                  alt={step.title}
+                  className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-1000 ease-out"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t ${step.gradient} opacity-70 group-hover:opacity-50 transition-opacity duration-500`} />
+                
+
+                
+                {/* Enhanced Step Number */}
+                <div className="absolute top-6 left-6 w-14 h-14 glass-enhanced text-white rounded-2xl text-xl font-bold flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
                   {index + 1}
                 </div>
                 
-                {/* Icon */}
-                <div className={`w-16 h-16 mb-6 bg-gradient-to-br ${step.color} rounded-xl flex items-center justify-center shadow-lg shadow-primary/20`}>
-                  <step.icon className="h-8 w-8 text-white" />
+                {/* Enhanced Icon */}
+                <div className="absolute bottom-6 right-6 w-16 h-16 glass-enhanced rounded-3xl flex items-center justify-center shadow-2xl group-hover:rotate-12 transition-transform duration-500">
+                  <step.icon className="h-8 w-8 text-white drop-shadow-lg" />
                 </div>
-                
-                <h3 className="font-heading text-xl font-bold mb-3">
+              </div>
+              
+              {/* Content */}
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-4 text-secondary">
                   {step.title}
                 </h3>
                 
-                <p className="font-body text-foreground/70 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed text-lg">
                   {step.description}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        
-        <div className="mt-16 text-center">
-          <button className="bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 font-semibold py-3 px-8 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
-            Start Your Journey
-          </button>
+
+        {/* Enhanced Call to Action */}
+        <div className="text-center mt-20">
+          <div className="inline-flex items-center px-8 py-4 glass-enhanced border border-primary/30 rounded-2xl text-primary font-semibold text-lg shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <Sparkles className="mr-3 h-5 w-5 animate-pulse" />
+            Ready to start your story journey?
+            <ArrowRight className="ml-3 h-5 w-5 animate-bounce" style={{ animationDuration: '2s' }} />
+          </div>
         </div>
       </div>
     </section>

@@ -1,184 +1,127 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Mail, Lock, User, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+const Register: React.FC = () => {
+  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
-      });
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
-
-    setIsLoading(true);
     
-    // Simulate registration
-    setTimeout(() => {
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify({
-        id: "1",
-        email: formData.email,
-        name: formData.name,
-        avatar: "/placeholder.svg",
-        storiesContributed: 0,
-        badges: ["New Member"]
-      }));
-      
-      toast({
-        title: "Welcome to Story Swap!",
-        description: "Your account has been created successfully.",
-      });
-      
-      navigate("/explore");
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    try {
+      setError('');
+      // For demo purposes, we'll just log them in after "registration"
+      await login(email, password);
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
+    }
   };
 
   return (
-    <div className="min-h-screen pt-16 bg-gradient-hero flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <MapPin className="h-10 w-10 text-white" />
-            <span className="text-2xl font-bold text-white">Story Swap</span>
-          </div>
-          <p className="text-white/80">Join the global storytelling community</p>
-        </div>
-
-        <Card className="card-gradient border-0 shadow-hero">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-            <CardDescription className="text-center">
-              Start sharing your stories with the world
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your name"
-                    value={formData.name}
-                    onChange={(e) => updateFormData("name", e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => updateFormData("email", e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Create a password"
-                    value={formData.password}
-                    onChange={(e) => updateFormData("password", e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => updateFormData("confirmPassword", e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full btn-glow" 
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center space-y-3">
-              {/* Demo Note */}
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="text-xs text-amber-800">
-                  💡 <strong>Demo Mode:</strong> Try existing demo accounts on the{" "}
-                  <Link 
-                    to="/login" 
-                    className="text-amber-900 hover:text-amber-700 font-medium underline"
-                  >
-                    login page
-                  </Link>{" "}
-                  instead of creating new accounts.
-                </p>
-              </div>
-              
-              <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <Link 
-                  to="/login" 
-                  className="text-primary hover:text-primary-glow font-medium transition-colors"
-                >
-                  Sign in
-                </Link>
-              </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 px-4">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <MapPin className="h-8 w-8 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Story Swap
+            </h1>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900">Join our community</h2>
+          <p className="mt-2 text-gray-600">Create your account to start sharing stories</p>
+        </div>
+        
+        <div className="bg-white p-8 rounded-2xl shadow-xl">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Enter your email"
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Create a password"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                placeholder="Confirm your password"
+                className="w-full"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            >
+              {isLoading ? 'Creating account...' : 'Create account'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+                Sign in
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 text-center">
+              <strong>Demo:</strong> Use any email and password to create an account
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

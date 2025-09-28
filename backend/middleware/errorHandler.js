@@ -107,47 +107,91 @@ const handleError = (err) => {
 };
 
 /**
- * Global error handling middleware
+ * Global error handling middleware with enhanced tracking and user-friendly messages
  */
 const errorHandler = (err, req, res, next) => {
-  let error = handleError(err);
-
-  // Log error details
-  logger.error('API Error:', {
-    error: {
-      message: error.message,
+  // Process the error to ensure it's an APIError
+  const error = handleError(err);
+  
+  // Generate unique error ID for tracking
+  const errorId = generateErrorId();
+  
+  // Log the error with enhanced context
+  if (error.statusCode >= 500) {
+    logger.error(`[${errorId}][${error.code}] ${error.message}`, { 
       stack: error.stack,
-      statusCode: error.statusCode,
-      code: error.code
-    },
-    request: {
+      details: error.details,
+      path: req.path,
       method: req.method,
-      url: req.originalUrl,
+      query: req.query,
+      params: req.params,
       ip: req.ip,
       userAgent: req.get('User-Agent'),
-      userId: req.user ? req.user._id : null
-    }
-  });
-
-  // Don't leak error details in production
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  
-  const errorResponse = {
-    error: {
-      code: error.code || 'INTERNAL_ERROR',
-      message: error.message,
-      ...(error.details && { details: error.details }),
-      ...(isDevelopment && { stack: error.stack }),
-      timestamp: new Date().toISOString()
-    }
-  };
-
-  // Add request ID if available
-  if (req.id) {
-    errorResponse.requestId = req.id;
+      userId: req.user?.id || 'unauthenticated'
+    });
+  } else {
+    logger.warn(`[${errorId}][${error.code}] ${error.message}`, {
+      details: error.details,
+      path: req.path,
+      method: req.method,
+      userId: req.user?.id || 'unauthenticated'
+    });
   }
 
-  res.status(error.statusCode || 500).json(errorResponse);
+  // Create user-friendly error message
+  const userMessage = getUserFriendlyMessage(error);
+
+  // Send response with appropriate information based on environment
+  res.status(error.statusCode).json({
+    success: false,
+    error: {
+      code: error.code,
+      message: userMessage,
+      errorId: errorId, // Include for support reference
+      ...(error.details && process.env.NODE_ENV !== 'production' && { details: error.details }),
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack, originalMessage: error.message })
+    }
+  });
+};
+
+/**
+ * Generate a unique error ID for tracking
+ */
+const generateErrorId = () => {
+  return `err_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+};
+
+/**
+ * Get user-friendly error message based on error type
+ */
+const getUserFriendlyMessage = (error) => {
+  // For 500 errors, don't expose details
+  if (error.statusCode >= 500) {
+    return "We're experiencing technical difficulties. Our team has been notified.";
+  }
+  
+  // For validation errors, return the message as is
+  if (error.code === 'VALIDATION_ERROR') {
+    return error.message;
+  }
+  
+  // For authentication errors
+  if (error.code === 'AUTHENTICATION_ERROR' || error.statusCode === 401) {
+    return "Authentication failed. Please sign in again.";
+  }
+  
+  // For authorization errors
+  if (error.code === 'AUTHORIZATION_ERROR' || error.statusCode === 403) {
+    return "You don't have permission to perform this action.";
+  }
+  
+  // For not found errors
+  if (error.statusCode === 404) {
+    return "The requested resource was not found.";
+  }
+  
+  // Default to original message for other client errors
+  return error.message;
 };
 
 /**

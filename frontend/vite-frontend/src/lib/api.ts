@@ -231,6 +231,32 @@ class ApiService {
     return this.request<{ stories: Story[]; pagination: Pagination; filters: Filters }>(endpoint);
   }
 
+  async getMyStories(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<{ stories: Story[]; pagination: Pagination; filters: Filters }>> {
+    const searchParams = new URLSearchParams();
+    
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    
+    // Add author filter for current user
+    const currentUserId = localStorage.getItem('currentUserId');
+    const currentUserEmail = localStorage.getItem('currentUserEmail');
+    
+    if (currentUserId) {
+      searchParams.append('author', currentUserId);
+    } else if (currentUserEmail) {
+      // Fallback to email-based filtering if needed
+      searchParams.append('authorEmail', currentUserEmail);
+    }
+
+    const queryString = searchParams.toString();
+    const endpoint = `/stories${queryString ? `?${queryString}` : ''}`;
+    
+    return this.request<{ stories: Story[]; pagination: Pagination; filters: Filters }>(endpoint);
+  }
+
   private getMockStories(): Partial<Story>[] {
     return [
       {

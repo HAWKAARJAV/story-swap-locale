@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -14,6 +15,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  
+  // Store the current path in sessionStorage to prevent auto-signout during navigation
+  // This helps with breadcrumb navigation issues
+  useEffect(() => {
+    if (location.pathname) {
+      sessionStorage.setItem('lastPath', location.pathname);
+    }
+  }, [location.pathname]);
 
   // Show loading spinner while checking auth status
   if (isLoading) {
@@ -26,12 +35,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // If route requires authentication and user is not authenticated
   if (requireAuth && !isAuthenticated) {
+    // Save the current location for redirect after login
+    sessionStorage.setItem('redirectAfterLogin', location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // If user is authenticated and trying to access login/register pages
   if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/register')) {
-    return <Navigate to="/explore" replace />;
+    // Check if there's a redirect path saved
+    const redirectPath = sessionStorage.getItem('redirectAfterLogin') || '/explore';
+    sessionStorage.removeItem('redirectAfterLogin'); // Clear after use
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

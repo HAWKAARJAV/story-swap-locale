@@ -2,148 +2,193 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users, BookOpen, ArrowRight, Globe, Star, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  // Dynamic background images carousel
+  const backgroundImages = [
+    {
+      url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      title: "Mountain Adventures"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      title: "City Explorations"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      title: "Coastal Journeys"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      title: "Forest Escapes"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
+      title: "Desert Wonders"
+    }
+  ];
+
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  
+  // Auto-rotate background images - Optimized timing
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+    }, 8000); // Change every 8 seconds to reduce transitions
+    
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Gradient - Enhanced */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-background to-accent/20 opacity-90" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
+      {/* Optimized Background Carousel */}
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-800 ease-in-out ${
+            index === currentBgIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('${image.url}')`,
+            willChange: 'opacity'
+          }}
+        />
+      ))}
       
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 animate-pulse opacity-40">
-        <div className="h-24 w-24 rounded-full bg-gradient-to-r from-primary-glow to-accent blur-xl"></div>
+      {/* Reduced Floating Particles */}
+      <div className="absolute inset-0">
+        <div className="floating absolute top-20 left-10 w-2 h-2 bg-white/20 rounded-full"></div>
+        <div className="floating absolute bottom-32 left-20 w-3 h-3 bg-accent/20 rounded-full"></div>
+        <div className="floating absolute bottom-40 right-1/3 w-2 h-2 bg-primary/20 rounded-full"></div>
       </div>
-      <div className="absolute bottom-20 right-10 animate-pulse opacity-30" style={{ animationDelay: '1s' }}>
-        <div className="h-32 w-32 rounded-full bg-gradient-to-r from-accent to-secondary blur-xl"></div>
-      </div>
-      <div className="absolute top-1/3 right-1/4 animate-pulse opacity-20" style={{ animationDelay: '2s' }}>
-        <div className="h-16 w-16 rounded-full bg-gradient-to-r from-secondary to-primary-glow blur-lg"></div>
-      </div>
+      
+      {/* Simple Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5 opacity-30" />
 
-      {/* Content - Two Column Layout */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 md:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Text Content */}
-          <div className="animate-fade-in text-left">
-            <div className="inline-block px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary-glow text-xs font-medium mb-6 backdrop-blur-sm">
-              <span className="font-heading tracking-wider">NATIONAL STARTUP HACKATHON 2024</span>
-            </div>
-            
-            <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Swap Stories,
-              <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent">Discover Cities</span>
-            </h1>
-            
-            <p className="font-body text-lg md:text-xl text-foreground/80 mb-8 max-w-2xl leading-relaxed">
-              Share your local adventures and unlock authentic stories from travelers and locals around the world. Join our community of passionate storytellers.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 items-start mb-12">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 text-lg px-8 py-6 h-auto rounded-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
-                onClick={() => navigate('/explore')}
-              >
-                <MapPin className="mr-2 h-5 w-5" />
-                Start Exploring
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              
-              {user ? (
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white/20 text-foreground hover:bg-white/5 text-lg px-8 py-6 h-auto rounded-lg backdrop-blur-sm"
-                  onClick={() => navigate('/submit')}
-                >
-                  <BookOpen className="mr-2 h-5 w-5" />
-                  Share Your Story
-                </Button>
-              ) : (
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white/20 text-foreground hover:bg-white/5 text-lg px-8 py-6 h-auto rounded-lg backdrop-blur-sm"
-                  onClick={() => navigate('/register')}
-                >
-                  <Users className="mr-2 h-5 w-5" />
-                  Join Community
-                </Button>
-              )}
-            </div>
-
-            {/* Stats - Enhanced */}
-            <div className="grid grid-cols-3 gap-8 max-w-md text-foreground/90 bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent">2,847</div>
-                <div className="text-sm font-medium mt-1">Stories Shared</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent">156</div>
-                <div className="text-sm font-medium mt-1">Cities Covered</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent">1,234</div>
-                <div className="text-sm font-medium mt-1">Story Swappers</div>
-              </div>
-            </div>
+      {/* Content - Centered Layout like travel sites */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-32">
+        <div className="text-center">
+          {/* Enhanced Badge with Glassmorphism */}
+          <div className="inline-block px-8 py-3 rounded-full glass-enhanced text-white text-sm font-semibold mb-8 shadow-2xl animate-fade-in">
+            <span className="font-heading tracking-wider flex items-center">
+              <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
+              DISCOVER • SHARE • CONNECT
+              <Globe className="w-4 h-4 ml-2 animate-spin" style={{ animationDuration: '8s' }} />
+            </span>
           </div>
           
-          {/* Right Column - Phone Mockup */}
-          <div className="hidden lg:block relative">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
+          {/* Simplified Main Heading */}
+          <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight text-white animate-fade-in">
+            Share Stories,
+            <br />
+            <span className="text-primary">
+              Discover Cities
+            </span>
+          </h1>
+          
+          {/* Subtitle */}
+          <p className="font-body text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Connect with travelers and locals worldwide through authentic stories. 
+            <br className="hidden sm:block" />
+            Unlock hidden gems and share your adventures.
+          </p>
+
+          {/* Enhanced Call-to-Action Buttons with Magnetic Effects */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <Button 
+              size="lg" 
+              className="btn-magnetic bg-gradient-to-r from-primary to-primary-glow text-white text-lg px-12 py-5 h-auto rounded-2xl shadow-2xl hover:shadow-primary/40 transition-all duration-500 group animate-fade-in"
+              onClick={() => navigate('/explore')}
+              style={{ animationDelay: '5s' }}
+            >
+              <MapPin className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+              Start Exploring
+              <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </Button>
             
-            <div className="relative bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl">
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-accent to-secondary rounded-full blur-2xl opacity-30"></div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <Globe className="w-6 h-6 text-primary-glow mr-2" />
-                  <span className="font-heading text-foreground font-medium">Story Swap</span>
+            {user ? (
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group animate-fade-in"
+                onClick={() => navigate('/submit')}
+                style={{ animationDelay: '5.5s' }}
+              >
+                <BookOpen className="mr-3 h-5 w-5 group-hover:rotate-6 transition-transform duration-300" />
+                Share Your Story
+              </Button>
+            ) : (
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group animate-fade-in"
+                onClick={() => navigate('/register')}
+                style={{ animationDelay: '5.5s' }}
+              >
+                <Users className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                Join Community
+              </Button>
+            )}
+          </div>
+
+          {/* Enhanced Stats Cards with Tilt Effects */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6s' }}>
+              <div className="text-center">
+                <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
+                  2,847
                 </div>
-                <div className="flex space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <Star className="w-4 h-4 text-yellow-400" />
-                </div>
+                <div className="text-white font-semibold text-lg mb-1">Stories Shared</div>
+                <div className="text-white/70 text-sm">From travelers worldwide</div>
+                <div className="mt-3 w-12 h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto"></div>
               </div>
-              
-              <div className="bg-gray-800/50 rounded-lg p-4 mb-6 border border-white/5 shadow-lg">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mr-3 shadow-lg">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-foreground font-medium font-heading">Discover Paris</div>
-                    <div className="text-xs text-foreground/60">Hidden gems & local favorites</div>
-                  </div>
+            </div>
+            <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6.2s' }}>
+              <div className="text-center">
+                <div className="text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
+                  156
                 </div>
-                <div className="h-40 bg-gradient-to-br from-gray-700/50 to-gray-900/50 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative shadow-inner">
-                  <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073')] bg-cover bg-center"></div>
-                  <MapPin className="w-8 h-8 text-primary-glow/70" />
-                </div>
-                <div className="text-xs text-foreground/60">Explore 24 authentic stories from locals</div>
+                <div className="text-white font-semibold text-lg mb-1">Cities Covered</div>
+                <div className="text-white/70 text-sm">Across 6 continents</div>
+                <div className="mt-3 w-12 h-1 bg-gradient-to-r from-accent to-primary rounded-full mx-auto"></div>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-foreground font-medium">Popular Cities</div>
-                <div className="text-xs bg-clip-text text-transparent bg-gradient-to-r from-primary-glow to-accent font-medium">View All</div>
+            </div>
+            <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6.4s' }}>
+              <div className="text-center">
+                <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
+                  1,234
+                </div>
+                <div className="text-white font-semibold text-lg mb-1">Story Swappers</div>
+                <div className="text-white/70 text-sm">Active community members</div>
+                <div className="mt-3 w-12 h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-foreground/50 rounded-full mt-2"></div>
+      {/* Background Navigation Dots */}
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-3">
+        {backgroundImages.map((_, index) => (
+          <button
+            key={index}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentBgIndex 
+                ? 'bg-white scale-125 shadow-lg' 
+                : 'bg-white/40 hover:bg-white/60'
+            }`}
+            onClick={() => setCurrentBgIndex(index)}
+          />
+        ))}
+      </div>
+
+      {/* Fixed Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce pointer-events-none">
+        <div className="glass-enhanced w-8 h-14 border-2 border-white/60 rounded-full flex justify-center items-start pt-3">
+          <div className="w-1 h-4 bg-gradient-to-b from-white to-white/50 rounded-full animate-pulse"></div>
         </div>
       </div>
     </section>

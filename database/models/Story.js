@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
+// Create a schema with performance optimizations
 const storySchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -391,5 +392,15 @@ storySchema.statics.findTrending = function(limit = 20, timeframe = '7d') {
   .populate('author', 'username displayName avatar')
   .populate('location', 'address coordinates');
 };
+
+// Add performance indexes
+storySchema.index({ title: 'text', 'content.text.body': 'text', tags: 'text' }); // Text search index
+storySchema.index({ author: 1 }); // Author queries
+storySchema.index({ status: 1, publishedAt: -1 }); // Status + date queries
+storySchema.index({ 'location.coordinates': '2dsphere' }); // Geospatial queries
+storySchema.index({ category: 1 }); // Category filtering
+storySchema.index({ 'analytics.popularityScore': -1 }); // Trending stories
+storySchema.index({ createdAt: -1 }); // Recent stories
+storySchema.index({ slug: 1 }, { unique: true }); // Slug lookups
 
 module.exports = mongoose.model('Story', storySchema);

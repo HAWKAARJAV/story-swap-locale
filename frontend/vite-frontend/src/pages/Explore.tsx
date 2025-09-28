@@ -105,12 +105,12 @@ const Explore = () => {
 
   return (
     <div className="min-h-screen pt-16 bg-background">
-      {/* Header */}
+      {/* Header with Premium Styling */}
       <div className="bg-gradient-hero text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold mb-4">Explore Stories</h1>
+              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">Explore Stories</h1>
               <p className="text-xl text-white/90 max-w-2xl">
                 Discover authentic local experiences from storytellers around the world
               </p>
@@ -118,7 +118,7 @@ const Explore = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10 hover:text-white"
+              className="border-white/30 text-white hover:bg-white/20 hover:text-white shadow-lg transition-all"
               onClick={() => setShowMap(!showMap)}
             >
               <MapIcon className="mr-2 h-5 w-5" />
@@ -196,82 +196,76 @@ const Explore = () => {
               const storyImage = Object.values(storyImages)[index % Object.values(storyImages).length];
               
               return (
-                <Card key={story._id} className="story-card overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative">
+                <Card key={story._id} className="overflow-hidden h-full flex flex-col group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/30">
+                  <div className="relative h-48 overflow-hidden">
                     <img 
                       src={storyImage} 
-                      alt={story.title}
-                      className="w-full h-48 object-cover"
+                      alt={story.title} 
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                       onError={handleImageError}
                     />
-                    <div className="absolute top-4 left-4">
-                      <Badge variant="secondary" className="bg-white/90 text-foreground">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {story.location.address.city}
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-4 right-4">
-                      <div className="flex items-center space-x-2 text-white">
-                        <div className="flex items-center bg-black/50 rounded-full px-2 py-1">
-                          <Heart className="h-3 w-3 mr-1" />
-                          <span className="text-xs">{story.engagement?.likes || 0}</span>
-                        </div>
-                        <div className="flex items-center bg-black/50 rounded-full px-2 py-1">
-                          <Eye className="h-3 w-3 mr-1" />
-                          <span className="text-xs">{story.engagement?.views || 0}</span>
-                        </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-70 transition-opacity"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="secondary" className="bg-primary text-white hover:bg-primary/90 shadow-sm">
+                          {"Culture"}
+                        </Badge>
+                        {story.tags.slice(0, 1).map(tag => (
+                          <Badge key={tag} variant="outline" className="bg-black/30 text-white border-white/20 backdrop-blur-sm">
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
                   </div>
                   
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg line-clamp-2">{story.title}</CardTitle>
-                    <CardDescription className="line-clamp-3">
-                      {story.content.snippet}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <img 
-                          src={story.author.avatar?.url || avatarPlaceholder} 
-                          alt={story.author.displayName}
-                          className="w-6 h-6 rounded-full object-cover"
-                          onError={handleImageError}
-                        />
-                        <span className="text-sm text-muted-foreground">{story.author.displayName}</span>
-                      </div>
-                      <div className="flex space-x-2">
-                        {story.tags.slice(0, 2).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {story.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{story.tags.length - 2}
-                          </Badge>
-                        )}
+                  <CardHeader className="pb-2 group-hover:bg-muted/30 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl font-semibold line-clamp-2 group-hover:text-primary transition-colors">{story.title}</CardTitle>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <CardDescription className="flex items-center">
+                        <MapPin className="h-3.5 w-3.5 mr-1 text-primary" />
+                        <span className="text-sm text-muted-foreground truncate">
+                          {story.location.address.formatted || "Global"}
+                        </span>
+                      </CardDescription>
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                        <span>by</span>
+                        <span className="font-semibold text-primary">{story.author.displayName}</span>
                       </div>
                     </div>
+                  </CardHeader>
+                  
+                  <CardContent className="pb-4 flex-grow flex flex-col group-hover:bg-muted/30 transition-colors">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                      {story.content.snippet}
+                    </p>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="flex space-x-4 text-sm text-muted-foreground">
-                        <button className="flex items-center hover:text-primary transition-colors">
-                          <Heart className="h-4 w-4 mr-1" />
-                          {story.engagement?.likes || 0}
-                        </button>
-                        <button className="flex items-center hover:text-primary transition-colors">
-                          <Share2 className="h-4 w-4 mr-1" />
-                          Share
-                        </button>
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/30">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-muted ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all">
+                          <img 
+                            src={story.author.avatar?.url || avatarPlaceholder} 
+                            alt={story.author.displayName}
+                            className="w-full h-full object-cover"
+                            onError={handleImageError}
+                          />
+                        </div>
+                        <span className="text-sm font-medium">{story.author.displayName}</span>
                       </div>
                       
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4 mr-1" />
-                        Read
-                      </Button>
+                      <div className="flex items-center space-x-1 text-muted-foreground">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary hover:bg-primary/10">
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary hover:bg-primary/10">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary hover:bg-primary/10">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

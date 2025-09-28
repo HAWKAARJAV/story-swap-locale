@@ -13,41 +13,78 @@ const logger = require('../utils/logger');
  * @access Public (with optional authentication)
  */
 const getStories = asyncHandler(async (req, res) => {
-  const {
-    page = 1,
-    limit = 20,
-    lat,
-    lng,
-    radius = 5000, // meters
-    city,
-    tags,
-    search,
-    sortBy = 'recent'
-  } = req.query;
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      lat,
+      lng,
+      radius = 5000, // meters
+      city,
+      tags,
+      search,
+      sortBy = 'recent',
+      author,
+      authorEmail
+    } = req.query;
 
-  // Build query
-  let query = { status: 'published' };
-
-  // Location-based filtering
-  if (lat && lng) {
-    const longitude = parseFloat(lng);
-    const latitude = parseFloat(lat);
+    // Validate pagination parameters
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
     
-    // Find nearby locations first
-    const nearbyLocations = await Location.find({
-      coordinates: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          },
-          $maxDistance: parseInt(radius)
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_PAGINATION',
+          message: 'Page number must be a positive integer'
         }
-      }
-    }).select('_id');
+      });
+    }
     
-    query.location = { $in: nearbyLocations.map(loc => loc._id) };
-  } else if (city) {
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_PAGINATION',
+          message: 'Limit must be a positive integer between 1 and 100'
+        }
+      });
+    }
+
+    // Build query
+    let query = { status: 'published' };
+
+    // Location-based filtering with validation
+    if (lat && lng) {
+      const longitude = parseFloat(lng);
+      const latitude = parseFloat(lat);
+      
+      if (isNaN(longitude) || isNaN(latitude)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_COORDINATES',
+            message: 'Latitude and longitude must be valid numbers'
+          }
+        });
+      }
+      
+      // Find nearby locations first
+      const nearbyLocations = await Location.find({
+        coordinates: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude]
+            },
+            $maxDistance: parseInt(radius)
+          }
+        }
+      }).select('_id');
+      
+      query.location = { $in: nearbyLocations.map(loc => loc._id) };
+    } else if (city) {
     // Filter by city name
     const cityLocations = await Location.find({
       'address.city': new RegExp(city, 'i')
@@ -60,6 +97,20 @@ const getStories = asyncHandler(async (req, res) => {
   if (tags) {
     const tagList = Array.isArray(tags) ? tags : tags.split(',');
     query.tags = { $in: tagList };
+  }
+
+  // Author filtering
+  if (author) {
+    query.author = author;
+  } else if (authorEmail) {
+    // Find user by email and filter by their ID
+    const user = await User.findOne({ email: authorEmail }).select('_id');
+    if (user) {
+      query.author = user._id;
+    } else {
+      // If no user found, return empty results
+      query.author = null;
+    }
   }
 
   // Search filtering
@@ -129,6 +180,17 @@ const getStories = asyncHandler(async (req, res) => {
       search: search || null
     }
   });
+  } catch (error) {
+    logger.error('Error fetching stories:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'FETCH_ERROR',
+        message: 'Failed to fetch stories. Please try again later.',
+        errorId: `err_${Date.now().toString(36)}`
+      }
+    });
+  }
 });
 
 /**

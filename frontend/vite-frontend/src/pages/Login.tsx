@@ -1,171 +1,151 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Mail, Lock, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { login } = useAuth();
+const Login: React.FC = () => {
+  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate login
-    setTimeout(() => {
-      const userData = {
-        id: "1",
-        username: email.split('@')[0],
-        displayName: email.split('@')[0],
-        email,
-        avatar: "/placeholder.svg"
-      };
-      
-      const token = "fake-jwt-token-" + Date.now();
-      login(userData, token);
-      
-      toast({
-        title: "Welcome back!",
-        description: "Successfully logged in to Story Swap.",
-      });
-      
-      navigate("/explore");
-      setIsLoading(false);
-    }, 1000);
+    try {
+      setError('');
+      await login(email, password);
+    } catch (err) {
+      setError('Failed to login. Please try again.');
+    }
+  };
+
+  const quickLogin = (email: string) => {
+    setEmail(email);
+    setPassword('password');
+    login(email, 'password');
   };
 
   return (
-    <div className="min-h-screen pt-16 bg-gradient-hero flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <MapPin className="h-10 w-10 text-white" />
-            <span className="text-2xl font-bold text-white">Story Swap</span>
-          </div>
-          <p className="text-white/80">Welcome back to your story community</p>
-        </div>
-
-        <Card className="card-gradient border-0 shadow-hero">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials to access your stories
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              {/* Demo Credentials Section */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h3 className="text-sm font-semibold text-blue-900 mb-2">🎯 Demo Credentials</h3>
-                <div className="space-y-2 text-xs">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="font-medium text-blue-800">Admin:</p>
-                      <p className="text-blue-700">admin@example.com</p>
-                      <p className="text-blue-700">test1234</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-blue-800">User:</p>
-                      <p className="text-blue-700">rita@example.com</p>
-                      <p className="text-blue-700">test1234</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 mt-3">
-                    <button
-                      type="button"
-                      onClick={() => { setEmail("admin@example.com"); setPassword("test1234"); }}
-                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
-                    >
-                      Use Admin
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setEmail("rita@example.com"); setPassword("test1234"); }}
-                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
-                    >
-                      Use Rita
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setEmail("sam@example.com"); setPassword("test1234"); }}
-                      className="text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
-                    >
-                      Use Sam
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full btn-glow" 
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing In..." : "Sign In"}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center space-y-2">
-              <Link 
-                to="/forgot-password" 
-                className="text-sm text-primary hover:text-primary-glow transition-colors"
-              >
-                Forgot your password?
-              </Link>
-              <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link 
-                  to="/register" 
-                  className="text-primary hover:text-primary-glow font-medium transition-colors"
-                >
-                  Sign up
-                </Link>
-              </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 px-4">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <MapPin className="h-8 w-8 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Story Swap
+            </h1>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900">Welcome back</h2>
+          <p className="mt-2 text-gray-600">Sign in to your account</p>
+        </div>
+        
+        <div className="bg-white p-8 rounded-2xl shadow-xl">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Enter your email"
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Enter your password"
+                className="w-full"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            >
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                Sign up
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+            <p className="text-sm text-gray-700 font-semibold text-center">
+              Demo Users (Click to Quick Login):
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => quickLogin('hawk@example.com')}
+                className="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                🦅 Hawk (Admin)
+              </button>
+              <button
+                onClick={() => quickLogin('aarjav@example.com')}
+                className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                👨‍💻 Aarjav
+              </button>
+              <button
+                onClick={() => quickLogin('rita@example.com')}
+                className="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                ✍️ Rita
+              </button>
+              <button
+                onClick={() => quickLogin('sam@example.com')}
+                className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                📖 Sam
+              </button>
+              <button
+                onClick={() => quickLogin('anya@example.com')}
+                className="text-xs bg-pink-100 hover:bg-pink-200 text-pink-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                🌸 Anya
+              </button>
+              <button
+                onClick={() => quickLogin('newuser@test.com')}
+                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg transition-colors"
+              >
+                👤 New User
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 text-center pt-2 border-t">
+              Quick login or manually enter any email/password
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

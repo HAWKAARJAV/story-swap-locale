@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navigation from "./components/Navigation";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -16,21 +17,23 @@ import Profile from "./pages/Profile";
 import MyStories from "./pages/MyStories";
 import EditStory from "./pages/EditStory";
 import MapView from "./pages/MapView";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <div className="min-h-screen">
-            <Navigation />
-            <LogoutConfirmationDialog />
-            <Routes>
+    <HelmetProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <div className="min-h-screen">
+              <Navigation />
+              <LogoutConfirmationDialog />
+              <Routes>
               <Route 
                 path="/" 
                 element={
@@ -103,6 +106,7 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
+              <Route path="/about" element={<About />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -110,6 +114,7 @@ const App = () => (
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 

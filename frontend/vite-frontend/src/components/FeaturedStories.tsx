@@ -84,14 +84,15 @@ const FeaturedStories = () => {
   };
 
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl font-bold mb-4">
-            Featured Stories from Our Community
+        <div className="text-center mb-20 animate-fade-in">
+          <h2 className="text-5xl font-bold mb-6 text-secondary">
+            Discover Amazing Stories
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover authentic local experiences and hidden gems shared by fellow travelers and locals.
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            Explore authentic experiences from travelers and locals around the world. 
+            Each story unlocks a new perspective and reveals the hidden magic of extraordinary places.
           </p>
         </div>
 
@@ -113,11 +114,11 @@ const FeaturedStories = () => {
         <div className="text-center">
           <Button 
             size="lg" 
-            className="btn-glow"
+            className="btn-magnetic bg-gradient-to-r from-primary via-primary-glow to-accent text-white text-lg px-12 py-5 h-auto rounded-2xl shadow-2xl hover:shadow-primary/40 transition-all duration-500 group"
             onClick={() => navigate('/explore')}
           >
             Explore All Stories
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
           </Button>
         </div>
       </div>
