@@ -3,22 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Eye, MapPin, Calendar, User } from "lucide-react";
 import { handleImageError } from "@/utils/imageUtils";
-
-interface Story {
-  id: string;
-  title: string;
-  excerpt: string;
-  fullContent?: string;
-  location: string;
-  tags: string[];
-  likes: number;
-  comments: number;
-  views: number;
-  status: "published" | "draft" | "pending";
-  createdAt: string;
-  image?: string;
-  author?: string;
-}
+import { Story } from "@/lib/api";
 
 interface StoryDetailDialogProps {
   story: Story | null;
@@ -42,9 +27,12 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
     }
   };
 
+  // Get story content from API structure
+  const storyContent = story.content.text.body || story.content.snippet || 'No content available';
+  
   // Sample full content for demonstration
-  const sampleContent = story.fullContent || `
-    ${story.excerpt}
+  const sampleContent = storyContent.length > 100 ? storyContent : `
+    ${storyContent}
     
     This is where the full story content would be displayed. In a real application, this would contain the complete narrative that the user wrote when they submitted their story.
     
@@ -57,9 +45,9 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
     
     For now, this is sample content to demonstrate how the story detail view would work. Each story would have its own unique content based on what the author originally submitted.
     
-    This particular story about "${story.title}" in ${story.location} has received ${story.likes} likes and ${story.comments} comments from the community, showing how much people appreciate local stories and hidden gems.
+    This particular story about "${story.title}" in ${story.location.address.formatted} has received ${story.engagement.likes} likes and ${story.engagement.comments} comments from the community, showing how much people appreciate local stories and hidden gems.
     
-    The author shared this story on ${new Date(story.createdAt).toLocaleDateString()}, and it has been viewed ${story.views} times since then.
+    The author shared this story on ${new Date(story.createdAt).toLocaleDateString()}, and it has been viewed ${story.engagement.views} times since then.
   `;
 
   return (
@@ -72,7 +60,7 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
-                  {story.location}
+                  {story.location.address.formatted}
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
@@ -80,7 +68,7 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
                 </div>
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-1" />
-                  {story.author || "You"}
+                  {story.author.displayName}
                 </div>
               </div>
             </div>
@@ -90,25 +78,18 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
           </div>
         </DialogHeader>
 
-        {story.image && (
-          <div className="mb-6">
-            <img 
-              src={story.image} 
-              alt={story.title}
-              className="w-full h-64 object-cover rounded-lg"
-              onError={handleImageError}
-            />
-          </div>
-        )}
-
         <div className="space-y-6">
           {/* Tags */}
           <div className="flex flex-wrap gap-2">
-            {story.tags.map((tag) => (
+            {story.tags.length > 0 ? story.tags.map((tag) => (
               <Badge key={tag} variant="outline">
                 {tag}
               </Badge>
-            ))}
+            )) : (
+              <Badge variant="outline" className="opacity-50">
+                No tags
+              </Badge>
+            )}
           </div>
 
           {/* Story Content */}
@@ -123,15 +104,15 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <span className="flex items-center">
                 <Heart className="h-4 w-4 mr-1" />
-                {story.likes} likes
+                {story.engagement.likes} likes
               </span>
               <span className="flex items-center">
                 <MessageCircle className="h-4 w-4 mr-1" />
-                {story.comments} comments
+                {story.engagement.comments} comments
               </span>
               <span className="flex items-center">
                 <Eye className="h-4 w-4 mr-1" />
-                {story.views} views
+                {story.engagement.views} views
               </span>
             </div>
             
@@ -141,7 +122,7 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
               </Button>
               <Button onClick={() => {
                 // Navigate to edit mode - we'll implement this
-                console.log("Edit story:", story.id);
+                console.log("Edit story:", story._id);
                 onClose();
               }}>
                 Edit Story
