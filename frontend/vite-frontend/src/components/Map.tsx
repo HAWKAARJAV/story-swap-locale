@@ -1,6 +1,5 @@
 import { config } from '@/config/environment';
 import MapTilerMap from './MapTilerMap';
-import GoogleMap from './GoogleMap';
 
 interface MapProps {
   center: { lat: number; lng: number };
@@ -14,14 +13,9 @@ interface MapProps {
 }
 
 const Map = (props: MapProps) => {
-  // Prefer MapTiler if API key is available
+  // Use MapTiler if API key is available
   if (config.maptilerApiKey && config.maptilerApiKey !== 'your_maptiler_api_key_here') {
     return <MapTilerMap {...props} />;
-  }
-  
-  // Fallback to Google Maps
-  if (config.googleMapsApiKey && config.googleMapsApiKey !== 'your_google_maps_api_key_here') {
-    return <GoogleMap {...props} />;
   }
 
   // No API keys available

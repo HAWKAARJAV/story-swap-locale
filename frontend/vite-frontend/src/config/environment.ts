@@ -2,11 +2,8 @@
 // All environment variables must be prefixed with VITE_ to be accessible in the client
 
 export const config = {
-  // MapTiler Configuration (primary map provider)
+  // MapTiler Configuration
   maptilerApiKey: import.meta.env.VITE_MAPTILER_API_KEY || '',
-  
-  // Google Maps Configuration (fallback)
-  googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
   
   // API Configuration
   apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001',
