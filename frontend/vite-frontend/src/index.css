@@ -4,9 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hyperlocal Story Swap Design System - Premium Travel-Inspired Colors */
-
-/* Optimized Floating Particles - Reduced frequency */
+@layer components {
+  /* Core Animation Classes */
   .floating {
     animation: float 8s ease-in-out infinite;
     will-change: transform;
@@ -15,16 +14,13 @@
   .floating:nth-child(2) { animation-delay: -3s; }
   .floating:nth-child(3) { animation-delay: -6s; }
 
-  /* Simplified Gradient Background Animation */
   .gradient-animated {
     background: linear-gradient(-45deg, #ff6b6b, #4ecdc4);
     background-size: 200% 200%;
     animation: gradientShift 20s ease infinite;
   }
 
-@layer components {
-  /* Enhanced interactive elements - Travel Site Style */
-  /* Premium button hover effects */
+  /* Button Styles */
   .btn, button, [role="button"], .interactive {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
@@ -34,8 +30,8 @@
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
-  /* Elegant card hover effects */
+
+  /* Card Styles */
   .card-hover {
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-radius: var(--radius-lg);
@@ -48,26 +44,8 @@
     transform: translateY(-8px) scale(1.02);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
   }
-  
-  /* Image hover effects */
-  .img-hover {
-    transition: var(--transition-smooth);
-    overflow: hidden;
-    border-radius: var(--radius);
-  }
-  
-  .img-hover img {
-    transition: var(--transition-smooth);
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .img-hover:hover img {
-    transform: scale(1.05);
-  }
-  
-  /* Enhanced layout components */
+
+  /* Hero Section */
   .hero-section {
     background: var(--gradient-hero);
     padding: 4rem 2rem;
@@ -76,35 +54,6 @@
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-hero);
-  }
-  
-  .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/images/pattern-dots.svg');
-    opacity: 0.1;
-    z-index: 0;
-  }
-  
-  .hero-section > * {
-    position: relative;
-    z-index: 1;
-  }
-  
-  .section-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    background-image: var(--gradient-sunset);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
   }
 }
 
@@ -129,15 +78,7 @@
     font-weight: 700;
   }
   
-  .font-display {
-    font-family: var(--font-display);
-  }
-  
-  button, [role="button"], .btn, .interactive {
-    cursor: pointer !important;
-  }
-  
-  a, link {
+  button, [role="button"], .btn, .interactive, a {
     cursor: pointer !important;
   }
   :root {
@@ -303,55 +244,19 @@
 }
 
 @layer components {
-  /* Story Card Animations */
+  /* Story Components */
   .story-card {
     transform: translateZ(0);
-    transition-property: all;
-    transition-duration: 300ms;
+    transition: all 0.3s ease;
     box-shadow: var(--shadow-story);
   }
   
   .story-card:hover {
     transform: scale(1.05);
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  }
-
-  .story-card:hover {
     box-shadow: var(--shadow-warm);
   }
 
-  /* Hero Section Styles */
-  .hero-gradient {
-    background: var(--gradient-hero);
-  }
-
-  .card-gradient {
-    background: var(--gradient-card);
-  }
-
-  /* Map Pin Animations */
-  .map-pin {
-    transform: translateZ(0);
-    transition-property: transform;
-    transition-duration: 200ms;
-    cursor: pointer;
-  }
-  
-  .map-pin:hover {
-    transform: scale(1.1);
-  }
-
-  /* Button Glow Effects */
-  .btn-glow {
-    box-shadow: var(--shadow-warm);
-    transition: var(--transition-smooth);
-  }
-
-  .btn-glow:hover {
-    box-shadow: var(--shadow-hero);
-  }
-
-  /* Smooth Animations */
+  /* Animation Classes */
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
@@ -364,19 +269,7 @@
     animation: bounceGentle 2s infinite;
   }
 
-  /* Story Unlock Animation */
-  .story-unlock {
-    transform: translateZ(0);
-    transition-property: all;
-    transition-duration: 500ms;
-  }
-
-  .story-unlock.locked {
-    filter: blur(4px);
-    opacity: 0.7;
-  }
-
-  /* Optimized Button Effects */
+  /* Button Effects */
   .btn-magnetic {
     position: relative;
     overflow: hidden;
@@ -389,7 +282,7 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 
-  /* Glassmorphism Enhanced */
+  /* Glass Effects */
   .glass-enhanced {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
     backdrop-filter: blur(20px);
@@ -397,46 +290,11 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
-  /* Navigation specific glassmorphism */
   nav.glass-enhanced {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(25px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   }
-
-  /* Shimmer Effect */
-  .shimmer {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 400% 100%;
-    animation: shimmer 2s infinite;
-  }
-
-  /* Simplified Card Tilt */
-  .card-tilt {
-    transition: transform 0.2s ease-out;
-    will-change: transform;
-  }
-
-  .card-tilt:hover {
-    transform: translateY(-4px) scale(1.02);
-  }
-
-  /* Floating Elements */
-  .floating {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .floating:nth-child(2) { animation-delay: -2s; }
-  .floating:nth-child(3) { animation-delay: -4s; }
-
-  /* Gradient Background Animation */
-  .gradient-animated {
-    background: linear-gradient(-45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-  }
-
-  /* Removed typewriter to fix cursor issue and improve performance */
 }
 
 @layer utilities {

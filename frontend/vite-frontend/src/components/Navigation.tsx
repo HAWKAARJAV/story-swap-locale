@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Plus, Search, Globe, BookOpen, PenTool, User, Menu, X, Zap, Heart, Share2, LogOut } from "lucide-react";
+import { MapPin, Plus, Search, BookOpen, PenTool, User, Menu, X, Zap, Heart, Share2, LogOut, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
@@ -9,6 +9,7 @@ const Navigation = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [showQuickActions, setShowQuickActions] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
   const isSignedIn = !!user;
 
@@ -17,10 +18,8 @@ const Navigation = () => {
   };
 
   const handleLogoClick = (e: React.MouseEvent) => {
-    // If user is logged in, prevent navigation to home page
-    if (isSignedIn) {
-      e.preventDefault();
-    }
+    // Logo always navigates to explore page for logged in users, landing page for others
+    // No need to prevent default behavior
   };
 
   const toggleExpanded = () => {
@@ -47,7 +46,6 @@ const Navigation = () => {
           <Link 
             to={isSignedIn ? "/explore" : "/"} 
             className="flex items-center space-x-3 group flex-shrink-0"
-            onClick={handleLogoClick}
           >
             <div className="relative p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
               <MapPin className="h-5 w-5 text-white" />
@@ -99,15 +97,7 @@ const Navigation = () => {
                 </>
               )}
 
-              <Link 
-                to="/map" 
-                className="nav-island-item"
-                onMouseEnter={() => setHoveredItem('map')}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <Globe className="h-4 w-4" />
-                <span className="hidden lg:block">Map</span>
-              </Link>
+
 
               {/* Quick Actions Trigger */}
               {isSignedIn && (
@@ -129,34 +119,95 @@ const Navigation = () => {
           {/* Right Section - User Actions */}
           <div className="flex items-center space-x-2 flex-shrink-0">
             {isSignedIn ? (
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-3 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300">
+              <div className="relative flex items-center space-x-2">
+                {/* User Menu Button */}
+                <button
+                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onMouseEnter={() => setShowUserMenu(true)}
+                >
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-white" />
+                    <Menu className="h-4 w-4 text-white" />
                   </div>
                   <span className="text-white/90 font-medium text-sm hidden sm:block">
                     {user?.displayName || user?.username || 'User'}
                   </span>
-                </div>
-                <button
-                  onClick={handleLogoutClick}
-                  className="island-button secondary flex items-center space-x-1"
-                  title="Logout"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:block">Logout</span>
+                  <ChevronDown className="h-4 w-4 text-white/70" />
                 </button>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div 
+                    className="absolute top-full right-0 mt-2 w-64 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl z-50"
+                    onMouseLeave={() => setShowUserMenu(false)}
+                  >
+                    <div className="p-4">
+                      <div className="text-center mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <User className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="text-white font-semibold">
+                          {user?.displayName || user?.username || 'User'}
+                        </h3>
+                        <p className="text-white/70 text-sm">Thank you for joining!</p>
+                        <p className="text-white/60 text-xs mt-1">Here you go, start exploring...</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Link 
+                          to="/my-stories" 
+                          className="flex items-center space-x-2 w-full px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <BookOpen className="h-4 w-4" />
+                          <span>My Stories</span>
+                        </Link>
+                        
+                        <Link 
+                          to="/submit" 
+                          className="flex items-center space-x-2 w-full px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <PenTool className="h-4 w-4" />
+                          <span>Add Story</span>
+                        </Link>
+                        
+                        <Link 
+                          to="/profile" 
+                          className="flex items-center space-x-2 w-full px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <User className="h-4 w-4" />
+                          <span>Profile</span>
+                        </Link>
+                        
+                        <hr className="border-white/20 my-2" />
+                        
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            handleLogoutClick();
+                          }}
+                          className="flex items-center space-x-2 w-full px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex items-center space-x-2">
                 <Link to="/login">
                   <button className="island-button secondary">
-                    <span>Login</span>
+                    <span>Start Exploring</span>
                   </button>
                 </Link>
                 <Link to="/register">
                   <button className="island-button primary">
-                    <span>Join</span>
+                    <span>Join Community</span>
                   </button>
                 </Link>
               </div>

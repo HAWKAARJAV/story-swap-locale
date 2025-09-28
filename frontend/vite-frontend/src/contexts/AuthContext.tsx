@@ -82,8 +82,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   React.useEffect(() => {
     const token = localStorage.getItem('authToken');
     const userEmail = localStorage.getItem('currentUserEmail');
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
     
-    if (token && userEmail) {
+    if (token && userEmail && isLoggedIn === 'true') {
       // Try to find existing user first
       const existingUser = dummyUsers[userEmail];
       
@@ -111,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    if (email && password) {
+      if (email && password) {
       // Check if email matches existing dummy user
       const existingUser = dummyUsers[email.toLowerCase()];
       
@@ -122,6 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem('authToken', `token-${existingUser.id}`);
         localStorage.setItem('currentUserId', existingUser.id);
         localStorage.setItem('currentUserEmail', existingUser.email);
+        localStorage.setItem('isLoggedIn', 'true');
       } else {
         // Create new user for any other email
         const newUser = {
@@ -135,14 +137,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem('authToken', `token-${newUser.id}`);
         localStorage.setItem('currentUserId', newUser.id);
         localStorage.setItem('currentUserEmail', newUser.email);
+        localStorage.setItem('isLoggedIn', 'true');
       }
       
       navigate('/explore');
     } else {
       throw new Error('Invalid credentials');
-    }
-    
-    setIsLoading(false);
+    }    setIsLoading(false);
   };
 
   // Logout function
@@ -152,6 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUserId');
     localStorage.removeItem('currentUserEmail');
+    localStorage.removeItem('isLoggedIn');
     setShowLogoutConfirmation(false);
     navigate('/');
   };
