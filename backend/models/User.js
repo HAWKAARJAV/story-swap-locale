@@ -36,8 +36,7 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
+// Indices reduced to avoid duplicates; email & username already unique enforced by schema uniqueness.
 userSchema.index({ location: '2dsphere' });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ 'stats.storiesPublished': -1 });

@@ -32,7 +32,7 @@ const tagSchema = new mongoose.Schema({
   relatedTags: [{ type: String, ref: 'Tag' }]
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-tagSchema.index({ name: 1 });
+// tagSchema.index({ name: 1 }); // Removed duplicate; text index below covers name
 tagSchema.index({ category: 1, 'usage.popularityScore': -1 });
 tagSchema.index({ 'usage.totalStories': -1 });
 tagSchema.index({ 'trending.istrending': 1, 'trending.trendingScore': -1 });

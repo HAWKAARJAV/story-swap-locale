@@ -141,9 +141,7 @@ const getStories = asyncHandler(async (req, res) => {
   try {
     const qLimit = parseInt(limit);
     const qSkip = (parseInt(page) - 1) * qLimit;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[DEBUG:getStories] about to query', { query, sortOptions, qLimit, qSkip });
-    }
+    // Removed verbose debug logging after stabilization.
     stories = await Story.find(query)
       .populate('author', 'username displayName avatar homeCity stats')
       .populate('location', 'coordinates address')
@@ -172,13 +170,7 @@ const getStories = asyncHandler(async (req, res) => {
     });
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[DEBUG:getStories] final query', query, 'returned', stories.length, 'total', total);
-    if (stories.length === 0) {
-      const draftCount = await Story.countDocuments({ status: 'draft' });
-      console.log('[DEBUG:getStories] draft stories present?', draftCount);
-    }
-  }
+  // Removed verbose debug logging.
   const pages = Math.ceil(total / parseInt(limit));
 
   // Process stories for response (check if unlocked for current user)

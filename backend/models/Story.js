@@ -88,15 +88,10 @@ const storySchema = new mongoose.Schema({
   expiresAt: Date
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-storySchema.index({ author: 1, status: 1 });
-storySchema.index({ location: 1, status: 1 });
-storySchema.index({ tags: 1, status: 1 });
-storySchema.index({ publishedAt: -1 });
-storySchema.index({ 'engagement.popularityScore': -1 });
-storySchema.index({ 'engagement.views': -1 });
-storySchema.index({ 'engagement.likes': -1 });
+// Consolidated essential indexes to reduce duplication in dev.
 storySchema.index({ status: 1, publishedAt: -1 });
-storySchema.index({ 'swapSettings.isLocked': 1, status: 1 });
+storySchema.index({ author: 1 });
+storySchema.index({ 'engagement.popularityScore': -1 });
 storySchema.index({ title: 'text', 'content.text.body': 'text', 'content.snippet': 'text' });
 
 storySchema.virtual('isUnlocked').get(function () { return !this.swapSettings.isLocked || !this.swapSettings.requiresSwap; });
