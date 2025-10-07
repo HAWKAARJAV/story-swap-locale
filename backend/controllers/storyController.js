@@ -1,8 +1,9 @@
-const Story = require('../../database/models/Story');
-const Location = require('../../database/models/Location');
-const Tag = require('../../database/models/Tag');
-const Swap = require('../../database/models/Swap');
-const User = require('../../database/models/User');
+// Unified model imports (single mongoose instance)
+const Story = require('../models/Story');
+const Location = require('../models/Location');
+const Tag = require('../models/Tag');
+const Swap = require('../models/Swap');
+const User = require('../models/User');
 const { asyncHandler, validationError, notFoundError, authorizationError } = require('../middleware/errorHandler');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/logger');
@@ -134,18 +135,50 @@ const getStories = asyncHandler(async (req, res) => {
       sortOptions = { publishedAt: -1 };
   }
 
-  // Execute query with pagination
-  const stories = await Story.find(query)
-    .populate('author', 'username displayName avatar homeCity stats')
-    .populate('location', 'coordinates address')
-    .populate('tags', 'name displayName color')
-    .sort(sortOptions)
-    .limit(parseInt(limit))
-    .skip((parseInt(page) - 1) * parseInt(limit))
-    .lean();
+  // Execute query with pagination (add debug + granular error capture)
+  let stories = [];
+  let total = 0;
+  try {
+    const qLimit = parseInt(limit);
+    const qSkip = (parseInt(page) - 1) * qLimit;
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[DEBUG:getStories] about to query', { query, sortOptions, qLimit, qSkip });
+    }
+    stories = await Story.find(query)
+      .populate('author', 'username displayName avatar homeCity stats')
+      .populate('location', 'coordinates address')
+      .populate('tags', 'name displayName color')
+      .sort(sortOptions)
+      .limit(qLimit)
+      .skip(qSkip)
+      .lean();
+    total = await Story.countDocuments(query);
+  } catch (innerErr) {
+    // Log full error details
+    logger.error('Story query failed', {
+      name: innerErr?.name,
+      message: innerErr?.message,
+      stack: innerErr?.stack,
+      code: innerErr?.code,
+      query
+    });
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'STORY_QUERY_FAILED',
+        message: 'Failed running story query',
+        details: innerErr?.message || 'Unknown error'
+      }
+    });
+  }
 
-  // Get total count for pagination
-  const total = await Story.countDocuments(query);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[DEBUG:getStories] final query', query, 'returned', stories.length, 'total', total);
+    if (stories.length === 0) {
+      const draftCount = await Story.countDocuments({ status: 'draft' });
+      console.log('[DEBUG:getStories] draft stories present?', draftCount);
+    }
+  }
   const pages = Math.ceil(total / parseInt(limit));
 
   // Process stories for response (check if unlocked for current user)

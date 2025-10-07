@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 require('dotenv').config();
 
-const { connectDB } = require('../database/database');
+const db = require('./config/database');
 const { setupSwagger } = require('./config/swagger');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
@@ -17,17 +17,32 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const storyRoutes = require('./routes/stories');
 const swapRoutes = require('./routes/swaps');
+const trailRoutes = require('./routes/trails');
+const travelRoutes = require('./routes/travel');
+const adminRoutes = require('./routes/admin');
 const mediaRoutes = require('./routes/media');
 const moderationRoutes = require('./routes/moderation');
-const adminRoutes = require('./routes/admin');
-const trailRoutes = require('./routes/trails');
+const agentxRoutes = require('./routes/agentx');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB (skip when running isolated tests)
+async function initDatabase() {
+  if (process.env.SKIP_DB === '1') {
+    logger.info('⏭️  SKIP_DB=1 detected - skipping MongoDB connection');
+    return;
+  }
+  const start = Date.now();
+  try {
+    await db.connect();
+    logger.info(`🗄️  MongoDB connection established in ${Date.now() - start}ms`);
+  } catch (err) {
+    logger.error('❌ Failed to initialize database connection', { message: err.message, stack: err.stack });
+    process.exit(1);
+  }
+}
 
 // Security middleware
 app.use(helmet({
@@ -78,6 +93,7 @@ const getAllowedOrigins = () => {
     process.env.FRONTEND_URL_NETWORK,
     'http://localhost:8080',
     'http://localhost:8081',
+    'http://localhost:8082',
     'http://localhost:3000',
     'http://localhost:5173'
   ].filter(Boolean);
@@ -90,7 +106,7 @@ const getAllowedOrigins = () => {
     .find(iface => iface?.family === 'IPv4' && !iface.internal)?.address;
   
   if (networkIP) {
-    origins.push(`http://${networkIP}:8080`, `http://${networkIP}:8081`);
+  origins.push(`http://${networkIP}:8080`, `http://${networkIP}:8081`, `http://${networkIP}:8082`);
   }
   
   return origins;
@@ -104,7 +120,7 @@ app.use(cors({
     if (allowedOrigins.includes(origin)) return callback(null, true);
     
     // Allow any local network IP on ports 8080/8081
-    if (/^http:\/\/(localhost|127\.0\.0\.1|\d+\.\d+\.\d+\.\d+):(808[01]|3000|5173)$/.test(origin)) {
+    if (/^http:\/\/(localhost|127\.0\.0\.1|\d+\.\d+\.\d+\.\d+):(808[0-2]|3000|5173)$/.test(origin)) {
       return callback(null, true);
     }
     
@@ -139,10 +155,12 @@ app.use(`/api/${API_VERSION}/auth`, authRoutes);
 app.use(`/api/${API_VERSION}/users`, userRoutes);
 app.use(`/api/${API_VERSION}/stories`, storyRoutes);
 app.use(`/api/${API_VERSION}/swaps`, swapRoutes);
+app.use(`/api/${API_VERSION}/travel`, travelRoutes);
 app.use(`/api/${API_VERSION}/media`, mediaRoutes);
 app.use(`/api/${API_VERSION}/moderation`, moderationRoutes);
 app.use(`/api/${API_VERSION}/admin`, adminRoutes);
 app.use(`/api/${API_VERSION}/trails`, trailRoutes);
+app.use(`/api/${API_VERSION}/agentx`, agentxRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -160,7 +178,7 @@ app.use(errorHandler);
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received. Shutting down gracefully...');
-  mongoose.connection.close().then(() => {
+  mongoose.disconnect().then(() => {
     logger.info('MongoDB connection closed.');
     process.exit(0);
   });
@@ -168,26 +186,29 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   logger.info('SIGINT received. Shutting down gracefully...');
-  mongoose.connection.close().then(() => {
+  mongoose.disconnect().then(() => {
     logger.info('MongoDB connection closed.');
     process.exit(0);
   });
 });
 
-app.listen(PORT, HOST, () => {
-  logger.info(`🚀 Server running on ${HOST}:${PORT} in ${process.env.NODE_ENV} mode`);
-  logger.info(`📚 API Documentation available at http://localhost:${PORT}/api/docs`);
-  
-  // Get network IP dynamically
-  const os = require('os');
-  const networkInterfaces = os.networkInterfaces();
-  const networkIP = Object.values(networkInterfaces)
-    .flat()
-    .find(iface => iface?.family === 'IPv4' && !iface.internal)?.address;
-  
-  if (networkIP) {
-    logger.info(`🌐 Network access available at http://${networkIP}:${PORT}/api/docs`);
-  }
-});
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    await initDatabase();
+    app.listen(PORT, HOST, () => {
+      logger.info(`🚀 Server running on ${HOST}:${PORT} in ${process.env.NODE_ENV} mode`);
+      logger.info(`📚 API Documentation available at http://localhost:${PORT}/api/docs`);
+      const os = require('os');
+      const networkInterfaces = os.networkInterfaces();
+      const networkIP = Object.values(networkInterfaces)
+        .flat()
+        .find(iface => iface?.family === 'IPv4' && !iface.internal)?.address;
+      if (networkIP) {
+        logger.info(`🌐 Network access available at http://${networkIP}:${PORT}/api/docs`);
+      }
+      logger.info('✅ Server is ready and accepting connections.');
+    });
+  })();
+}
 
 module.exports = app;

@@ -1,8 +1,8 @@
-const Swap = require('../../database/models/Swap');
-const Story = require('../../database/models/Story');
-const User = require('../../database/models/User');
-const Location = require('../../database/models/Location');
-const Tag = require('../../database/models/Tag');
+const Swap = require('../models/Swap');
+const Story = require('../models/Story');
+const User = require('../models/User');
+const Location = require('../models/Location');
+const Tag = require('../models/Tag');
 const { asyncHandler, validationError, notFoundError, authorizationError } = require('../middleware/errorHandler');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/logger');

@@ -1,4 +1,4 @@
-const User = require('../../database/models/User');
+const User = require('../models/User');
 const jwtService = require('../utils/jwt');
 const logger = require('../utils/logger');
 const { asyncHandler, validationError, authenticationError, notFoundError } = require('../middleware/errorHandler');

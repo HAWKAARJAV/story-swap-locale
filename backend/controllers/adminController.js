@@ -1,9 +1,11 @@
-const User = require('../../database/models/User');
-const Story = require('../../database/models/Story');
-const Location = require('../../database/models/Location');
-const Swap = require('../../database/models/Swap');
-const Tag = require('../../database/models/Tag');
-const Comment = require('../../database/models/Comment');
+const User = require('../models/User');
+const Story = require('../models/Story');
+const Location = require('../models/Location');
+const Swap = require('../models/Swap');
+const Tag = require('../models/Tag');
+// Comment model not yet unified; keep conditional require
+let Comment;
+try { Comment = require('../models/Comment'); } catch(_) { Comment = null; }
 const { asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
