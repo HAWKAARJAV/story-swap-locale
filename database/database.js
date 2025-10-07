@@ -4,20 +4,13 @@ const logger = require('../backend/utils/logger');
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hyperlocal-story-swap';
+    console.log('[DEBUG] Connecting to:', mongoURI);
     
-    // Enhanced connection options for better performance and scalability
-    const conn = await mongoose.connect(mongoURI, {
-      // Performance optimizations (removed deprecated options)
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-      family: 4, // Use IPv4, skip trying IPv6
-      maxPoolSize: 100, // Maximum number of connections in the connection pool
-      minPoolSize: 5, // Minimum number of connections in the connection pool
-      // Read/write concern for data reliability
-      retryWrites: true, // Automatically retry failed write operations
-    });
+    // Simple connection without complex options
+    const conn = await mongoose.connect(mongoURI);
 
     logger.info(`🍃 MongoDB Connected: ${conn.connection.host}`);
+    logger.info(`📦 Database: ${conn.connection.name}`);
 
     // Enhanced connection event handling
     mongoose.connection.on('error', (err) => {

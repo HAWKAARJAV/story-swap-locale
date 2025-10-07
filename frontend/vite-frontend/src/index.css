@@ -315,6 +315,26 @@
     60% { transform: translateY(-5px); }
   }
 
+  /* AI Glow Animation */
+  @keyframes aiGlow {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5), 0 0 10px rgba(147, 51, 234, 0.3);
+    }
+    50% { 
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(147, 51, 234, 0.6);
+    }
+  }
+
+  /* Special AI Button Glow */
+  .special-glow {
+    animation: aiGlow 3s ease-in-out infinite;
+  }
+
+  .special-glow:hover {
+    animation: none;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 1), 0 0 30px rgba(147, 51, 234, 0.8) !important;
+  }
+
   /* Background Image Carousel */
   @keyframes backgroundSlide {
     0% { opacity: 1; transform: scale(1); }
@@ -331,20 +351,12 @@
     100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
   }
 
-  /* Shimmer Loading Effect */
-  @keyframes shimmer {
-    0% { background-position: -468px 0; }
-    100% { background-position: 468px 0; }
-  }
-
   /* Floating Particles */
   @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     33% { transform: translateY(-10px) rotate(120deg); }
     66% { transform: translateY(10px) rotate(240deg); }
   }
-
-  /* Simplified animations for better performance */
 
   /* Gradient Animation */
   @keyframes gradientShift {

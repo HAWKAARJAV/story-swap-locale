@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+function simpleId() { return 'c-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
 
 const commentSchema = new mongoose.Schema({
   _id: {
     type: String,
-    default: uuidv4
+  default: simpleId
   },
   content: {
     type: String,

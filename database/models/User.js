@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+// Lightweight UUID replacement to avoid ESM uuid issues in tests
+function simpleId() {
+  return 'u-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
 
 const userSchema = new mongoose.Schema({
   _id: {
     type: String,
-    default: uuidv4
+  default: simpleId
   },
   email: {
     type: String,

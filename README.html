@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%F0%9F%8C%8D-story-swap---hyperlocal-travel-stories-platform">🌍 Story Swap - Hyperlocal Travel Stories Platform</h1>
+<blockquote>
+<p><strong>A premium travel storytelling platform where users share location-based stories and discover hidden gems through authentic local experiences.</strong></p>
+</blockquote>
+<p><img src="https://img.shields.io/badge/Story Swap-Premium Travel Platform-blue?style=for-the-badge&amp;logo=react" alt="Story Swap Banner"></p>
+<h2 id="%F0%9F%93%96-project-overview">📖 Project Overview</h2>
+<p>Story Swap is a sophisticated full-stack web application that enables travelers and locals to share location-specific stories, creating an authentic travel discovery platform. Users can upload stories tied to specific geographical locations, explore stories from others, and build a community around travel experiences.</p>
+<h3 id="%F0%9F%8E%AF-key-features">🎯 Key Features</h3>
+<ul>
+<li><strong>📍 Location-Based Storytelling</strong> - Stories are geotagged to specific locations</li>
+<li><strong>🔐 User Authentication</strong> - Secure login/registration with persistent sessions</li>
+<li><strong>📱 Dynamic Island Navigation</strong> - Premium iOS-inspired navigation with glassmorphism effects</li>
+<li><strong>👤 Personalized User Experience</strong> - User-specific story management and profiles</li>
+<li><strong>🗺️ Interactive Story Discovery</strong> - Explore stories by location and user</li>
+<li><strong>📝 Rich Text Editor</strong> - Advanced story creation with media support</li>
+<li><strong>🌟 Modern UI/UX</strong> - Travel-inspired design with smooth animations</li>
+</ul>
+<h2 id="%F0%9F%9B%A0%EF%B8%8F-technology-stack">🛠️ Technology Stack</h2>
+<h3 id="frontend">Frontend</h3>
+<ul>
+<li><strong>React 18</strong> with TypeScript</li>
+<li><strong>Vite</strong> for fast development and building</li>
+<li><strong>Tailwind CSS</strong> for styling</li>
+<li><strong>Shadcn/UI</strong> components</li>
+<li><strong>React Router</strong> for navigation</li>
+<li><strong>TanStack Query</strong> for data fetching</li>
+<li><strong>Custom Authentication Context</strong></li>
+</ul>
+<h3 id="backend">Backend</h3>
+<ul>
+<li><strong>Node.js</strong> with Express.js</li>
+<li><strong>MongoDB</strong> database with Mongoose ODM</li>
+<li><strong>JWT</strong> authentication</li>
+<li><strong>CORS</strong> configuration</li>
+<li><strong>RESTful API</strong> architecture</li>
+<li><strong>Swagger</strong> API documentation</li>
+</ul>
+<h3 id="database">Database</h3>
+<ul>
+<li><strong>MongoDB</strong> with collections for:
+<ul>
+<li>Users (with authentication)</li>
+<li>Stories (location-based content)</li>
+<li>Comments and engagement data</li>
+<li>Geographic location data</li>
+</ul>
+</li>
+</ul>
+<h3 id="development-tools">Development Tools</h3>
+<ul>
+<li><strong>TypeScript</strong> for type safety</li>
+<li><strong>ESLint</strong> for code quality</li>
+<li><strong>PostCSS</strong> for CSS processing</li>
+<li><strong>Git</strong> version control</li>
+</ul>
+<h2 id="%F0%9F%9A%80-quick-start">🚀 Quick Start</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Node.js (v18+ recommended)</li>
+<li>MongoDB (v7.0+ recommended)</li>
+<li>npm or yarn</li>
+</ul>
+<h3 id="one-command-setup">One-Command Setup</h3>
+<pre class="hljs"><code><div>./setup.sh
+</div></code></pre>
+<h3 id="start-application">Start Application</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Start both frontend and backend</span>
+./start-all.sh
+
+<span class="hljs-comment"># Or start individually</span>
+./start-backend.sh    <span class="hljs-comment"># Backend only</span>
+./start-frontend.sh   <span class="hljs-comment"># Frontend only</span>
+</div></code></pre>
+<h2 id="%F0%9F%8C%9F-features">🌟 Features</h2>
+<h3 id="undefined">� Security &amp; Secrets (Important)</h3>
+<p>Recent cleanup removed hardcoded API / widget keys. To keep the project secure:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend AgentX key</td>
+<td>Provide via <code>frontend/vite-frontend/.env.local</code> as <code>VITE_AGENTX_KEY=your_key</code></td>
+</tr>
+<tr>
+<td>Backend JWT</td>
+<td>Set <code>JWT_SECRET</code> and <code>REFRESH_TOKEN_SECRET</code> in <code>backend/.env</code> (never commit)</td>
+</tr>
+<tr>
+<td>Map / external APIs</td>
+<td>Store in env vars, not source files</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td>If a key was exposed, generate a new one → update env → redeploy → revoke old</td>
+</tr>
+</tbody>
+</table>
+<p>Steps:</p>
+<ol>
+<li>Copy <code>backend/.env.example</code> to <code>backend/.env</code> and fill values.</li>
+<li>Copy <code>frontend/vite-frontend/.env.example</code> to <code>.env.local</code> and add keys.</li>
+<li>Add any deployment secrets via your hosting provider’s secret manager.</li>
+<li>Never push real credentials – only <code>*.example</code> templates.</li>
+</ol>
+<p>Fallback behavior: If <code>VITE_AGENTX_KEY</code> is absent, AI chat returns a safe placeholder message and logs a console warning.</p>
+<p>To scrub an already committed secret (history rewrite example):</p>
+<pre class="hljs"><code><div>git filter-repo --invert-paths --path path/to/file-with-secret
+git push --force origin main
+</div></code></pre>
+<blockquote>
+<p>Treat any key you pasted into a public place as compromised—rotate it.</p>
+</blockquote>
+<h3 id="undefined">�🗺️ Enhanced Map Integration</h3>
+<ul>
+<li><strong>MapTiler Integration</strong> with API key <code>NSO8JuqWXOqh8UZs5tpY</code></li>
+<li><strong>Interactive Map Toggle</strong> in Explore page</li>
+<li><strong>Story Location Markers</strong> with clickable popups</li>
+<li><strong>Auto-centering</strong> and smart zoom calculation</li>
+<li><strong>Professional Styling</strong> with MapTiler Streets</li>
+</ul>
+<h3 id="%F0%9F%96%BC%EF%B8%8F-enhanced-uiux">🖼️ Enhanced UI/UX</h3>
+<ul>
+<li><strong>Rotating Story Images</strong> with error fallbacks</li>
+<li><strong>Enhanced Story Cards</strong> with hover effects</li>
+<li><strong>Better Engagement Display</strong> (likes, views, comments)</li>
+<li><strong>Professional Design</strong> with gradients and animations</li>
+<li><strong>Responsive Layout</strong> for all devices</li>
+</ul>
+<h3 id="%F0%9F%94%90-authentication">🔐 Authentication</h3>
+<ul>
+<li><strong>Demo Credentials</strong> for easy testing</li>
+<li><strong>One-click Login</strong> buttons</li>
+<li><strong>Role-based Access</strong> (Admin/User)</li>
+</ul>
+<h3 id="%F0%9F%93%B1-pages--features">📱 Pages &amp; Features</h3>
+<ul>
+<li><strong>🏠 Home</strong> - Hero section with call-to-action</li>
+<li><strong>🔍 Explore</strong> - Browse stories with interactive map</li>
+<li><strong>🗺️ Map View</strong> - Full-screen map experience</li>
+<li><strong>📝 My Stories</strong> - Story management dashboard</li>
+<li><strong>✏️ Edit Story</strong> - Rich story editing interface</li>
+<li><strong>➕ Submit Story</strong> - Create new stories</li>
+<li><strong>👤 Profile</strong> - User profile management</li>
+</ul>
+<h2 id="%F0%9F%8F%97%EF%B8%8F-project-structure">🏗️ Project Structure</h2>
+<pre class="hljs"><code><div>story-swap-locale/
+├── frontend/
+│   └── vite-frontend/
+│       ├── src/
+│       │   ├── components/        # Reusable UI components
+│       │   │   ├── Navigation.tsx # Dynamic Island navbar
+│       │   │   ├── StoryCard.tsx  # Story display cards
+│       │   │   └── ui/            # Shadcn/UI components
+│       │   ├── pages/             # Route components
+│       │   │   ├── Index.tsx      # Landing page
+│       │   │   ├── Explore.tsx    # Story discovery
+│       │   │   ├── MyStories.tsx  # User's stories
+│       │   │   └── SubmitStory.tsx# Story creation
+│       │   ├── contexts/          # React contexts
+│       │   │   └── AuthContext.tsx# Authentication state
+│       │   ├── lib/               # Utilities and API
+│       │   └── types/             # TypeScript definitions
+│       ├── package.json
+│       └── vite.config.ts
+├── backend/
+│   ├── server.js                  # Express server entry
+│   ├── controllers/               # Route handlers
+│   │   ├── authController.js      # Authentication logic
+│   │   ├── storyController.js     # Story CRUD operations
+│   │   └── userController.js      # User management
+│   ├── routes/                    # API routes
+│   ├── middleware/                # Custom middleware
+│   └── config/                    # Database &amp; app config
+├── database/
+│   ├── models/                    # Mongoose schemas
+│   │   ├── User.js               # User model
+│   │   ├── Story.js              # Story model
+│   │   └── Location.js           # Location model
+│   └── seedData.js               # Sample data
+└── docs/                         # Documentation
+</div></code></pre>
+<h2 id="%F0%9F%94%A7-configuration">🔧 Configuration</h2>
+<h3 id="environment-variables">Environment Variables</h3>
+<p><strong>Backend (.env)</strong></p>
+<pre class="hljs"><code><div>NODE_ENV=development
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/hyperlocal-story-swap
+JWT_SECRET=your-jwt-secret
+</div></code></pre>
+<p><strong>Frontend (.env)</strong></p>
+<pre class="hljs"><code><div>VITE_MAPTILER_API_KEY=NSO8JuqWXOqh8UZs5tpY
+VITE_API_URL=http://localhost:3001
+VITE_APP_NAME=Story Swap
+</div></code></pre>
+<h3 id="database-setup">Database Setup</h3>
+<p>The application uses MongoDB. The setup script will:</p>
+<ol>
+<li>Start MongoDB automatically (if using Homebrew)</li>
+<li>Create the database on first connection</li>
+<li>Seed with demo data using admin credentials</li>
+</ol>
+<h2 id="%F0%9F%8E%AF-demo-credentials">🎯 Demo Credentials</h2>
+<p><strong>Admin Account:</strong></p>
+<ul>
+<li>Email: <code>admin@example.com</code></li>
+<li>Password: <code>test1234</code></li>
+</ul>
+<p><strong>User Account:</strong></p>
+<ul>
+<li>Email: <code>rita@example.com</code></li>
+<li>Password: <code>test1234</code></li>
+</ul>
+<p><strong>Additional User:</strong></p>
+<ul>
+<li>Email: <code>sam@example.com</code></li>
+<li>Password: <code>test1234</code></li>
+</ul>
+<h2 id="%F0%9F%8C%90-access-urls">🌐 Access URLs</h2>
+<p>After starting the application:</p>
+<ul>
+<li><strong>Frontend:</strong> http://localhost:8080 or http://localhost:8081</li>
+<li><strong>Backend API:</strong> http://localhost:3001</li>
+<li><strong>API Documentation:</strong> http://localhost:3001/api/docs</li>
+</ul>
+<h2 id="%F0%9F%93%8B-manual-setup-alternative">📋 Manual Setup (Alternative)</h2>
+<p>If you prefer manual setup:</p>
+<h3 id="1-install-dependencies">1. Install Dependencies</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Backend</span>
+<span class="hljs-built_in">cd</span> backend &amp;&amp; npm install
+
+<span class="hljs-comment"># Frontend</span>
+<span class="hljs-built_in">cd</span> frontend/vite-frontend &amp;&amp; npm install
+
+<span class="hljs-comment"># Database (if needed)</span>
+<span class="hljs-built_in">cd</span> database &amp;&amp; npm install
+</div></code></pre>
+<h3 id="2-start-mongodb">2. Start MongoDB</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Using Homebrew</span>
+brew services start mongodb-community@7.0
+
+<span class="hljs-comment"># Or manually</span>
+mongod --config /usr/<span class="hljs-built_in">local</span>/etc/mongod.conf
+</div></code></pre>
+<h3 id="3-start-backend">3. Start Backend</h3>
+<pre class="hljs"><code><div><span class="hljs-built_in">cd</span> backend &amp;&amp; node server.js
+</div></code></pre>
+<h3 id="4-start-frontend">4. Start Frontend</h3>
+<pre class="hljs"><code><div><span class="hljs-built_in">cd</span> frontend/vite-frontend &amp;&amp; npm run dev
+</div></code></pre>
+<h2 id="%F0%9F%97%BA%EF%B8%8F-maptiler-setup">🗺️ MapTiler Setup</h2>
+<p>The application comes pre-configured with MapTiler API key. To use your own:</p>
+<ol>
+<li>Get API key from <a href="https://cloud.maptiler.com/">MapTiler Cloud</a></li>
+<li>Update <code>VITE_MAPTILER_API_KEY</code> in <code>frontend/vite-frontend/.env</code></li>
+<li>Restart frontend server</li>
+</ol>
+<p>See <code>docs/MAPTILER_SETUP.md</code> for detailed instructions.</p>
+<h2 id="%F0%9F%9A%AB-troubleshooting">🚫 Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<p><strong>MongoDB Connection Failed:</strong></p>
+<pre class="hljs"><code><div>brew services start mongodb-community@7.0
+</div></code></pre>
+<p><strong>Port Already in Use:</strong></p>
+<ul>
+<li>Frontend will automatically try port 8081 if 8080 is busy</li>
+<li>For backend, stop other services using port 3001</li>
+</ul>
+<p><strong>Missing Dependencies:</strong></p>
+<pre class="hljs"><code><div>./setup.sh  <span class="hljs-comment"># Re-run setup script</span>
+</div></code></pre>
+<p><strong>Map Not Loading:</strong></p>
+<ul>
+<li>Check console for MapTiler API errors</li>
+<li>Verify <code>VITE_MAPTILER_API_KEY</code> in <code>.env</code></li>
+<li>Restart frontend after env changes</li>
+</ul>
+<h3 id="reset-database">Reset Database</h3>
+<pre class="hljs"><code><div><span class="hljs-built_in">cd</span> backend &amp;&amp; node scripts/seedData.js
+</div></code></pre>
+<h2 id="%F0%9F%A4%9D-development">🤝 Development</h2>
+<h3 id="key-technologies">Key Technologies</h3>
+<ul>
+<li><strong>Frontend:</strong> React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui</li>
+<li><strong>Backend:</strong> Node.js, Express.js, MongoDB, Mongoose</li>
+<li><strong>Maps:</strong> MapTiler SDK, Google Maps (fallback)</li>
+<li><strong>Authentication:</strong> JWT, bcrypt</li>
+</ul>
+<h3 id="development-workflow">Development Workflow</h3>
+<ol>
+<li>Start backend: <code>./start-backend.sh</code></li>
+<li>Start frontend: <code>./start-frontend.sh</code></li>
+<li>Access frontend at http://localhost:8080</li>
+<li>API available at http://localhost:3001</li>
+</ol>
+<h2 id="%F0%9F%A4%9D-contributing">🤝 Contributing</h2>
+<ol>
+<li>Fork the repository</li>
+<li>Create a feature branch (<code>git checkout -b feature/amazing-feature</code>)</li>
+<li>Commit your changes (<code>git commit -m 'Add amazing feature'</code>)</li>
+<li>Push to the branch (<code>git push origin feature/amazing-feature</code>)</li>
+<li>Open a Pull Request</li>
+</ol>
+<h2 id="undefined">� License</h2>
+<p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
+<h2 id="%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB-author">👨‍💻 Author</h2>
+<p><strong>Aarjav Jain</strong></p>
+<ul>
+<li>GitHub: <a href="https://github.com/HAWKAARJAV">@HAWKAARJAV</a></li>
+<li>Repository: <a href="https://github.com/HAWKAARJAV/story-swap-locale">story-swap-locale</a></li>
+</ul>
+<h2 id="%F0%9F%99%8F-acknowledgments">🙏 Acknowledgments</h2>
+<ul>
+<li><strong>Shadcn/UI</strong> for beautiful component library</li>
+<li><strong>Tailwind CSS</strong> for utility-first styling</li>
+<li><strong>React community</strong> for excellent documentation</li>
+<li><strong>Vite</strong> for lightning-fast development experience</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%93%9E-support">📞 Support</h2>
+<p>For support, questions, or feature requests, please open an issue on GitHub or contact the development team.</p>
+<p><strong>Happy Storytelling! 🌍✨</strong></p>
+
+</body>
+</html>

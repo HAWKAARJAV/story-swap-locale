@@ -8,7 +8,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import LogoutConfirmationDialog from '@/components/LogoutConfirmationDialog';
+
+
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';

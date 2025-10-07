@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+function simpleId() {
+  return 's-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
 
 // Create a schema with performance optimizations
 const storySchema = new mongoose.Schema({
   _id: {
     type: String,
-    default: uuidv4
+  default: simpleId
   },
   title: {
     type: String,
@@ -31,7 +33,7 @@ const storySchema = new mongoose.Schema({
     media: [{
       _id: {
         type: String,
-        default: uuidv4
+  default: simpleId
       },
       type: {
         type: String,
