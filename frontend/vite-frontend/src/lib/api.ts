@@ -184,21 +184,28 @@ class ApiService {
     try {
       const url = `${API_BASE_URL}${endpoint}`;
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
+      // Attach auth token if present (dummy auth stores 'authToken')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+      const mergedHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...options?.headers as any,
+      };
+      if (token && !mergedHeaders['Authorization']) {
+        mergedHeaders['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options?.headers,
-        },
-        signal: controller.signal,
+        headers: mergedHeaders,
         ...options,
       });
 
-      clearTimeout(timeoutId);
-
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized (401) – login required or token invalid');
+        }
+        if (response.status === 403) {
+          throw new Error('Forbidden (403) – insufficient permissions');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -375,6 +382,48 @@ class ApiService {
       body: JSON.stringify(userData),
     });
   }
+
+  // AI Travel Planning endpoints
+  async generateTravelPlan(planData: {
+    userInput: string;
+    currentMood: string;
+    previousStories: string[];
+    userId?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/travel/plan', {
+      method: 'POST',
+      body: JSON.stringify(planData),
+    });
+  }
+
+  async analyzeStoryEmotion(storyData: {
+    storyContent: string;
+    storyTitle: string;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/travel/analyze-emotion', {
+      method: 'POST',
+      body: JSON.stringify(storyData),
+    });
+  }
+
+  async getUserTravelContext(): Promise<ApiResponse<any>> {
+    return this.request('/travel/user-context');
+  }
+
+  async saveTripPlan(tripPlan: any): Promise<ApiResponse<any>> {
+    return this.request('/travel/save-plan', {
+      method: 'POST',
+      body: JSON.stringify({ tripPlan }),
+    });
+  }
 }
 
 export const apiService = new ApiService();
+
+// Travel Planner Service
+export const travelPlannerService = {
+  generatePlan: (planData: any) => apiService.generateTravelPlan(planData),
+  analyzeEmotion: (storyData: any) => apiService.analyzeStoryEmotion(storyData),
+  getUserContext: () => apiService.getUserTravelContext(),
+  savePlan: (tripPlan: any) => apiService.saveTripPlan(tripPlan),
+};
