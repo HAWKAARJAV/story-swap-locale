@@ -22,6 +22,7 @@ import MapView from '@/pages/MapView';
 import About from '@/pages/About';
 import NotFound from '@/pages/NotFound';
 import TravelPlanner from '@/pages/TravelPlanner';
+import LogoutConfirmationDialog from './components/LogoutConfirmationDialog';
 
 const queryClient = new QueryClient();
 
