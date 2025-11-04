@@ -26,8 +26,21 @@ const Explore = () => {
   }>>([]);
 
   useEffect(() => {
+    // Force fresh fetch on component mount
     fetchStories();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  // Add a separate effect to refetch when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchStories();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   const fetchStories = async () => {
     setLoading(true);
@@ -106,24 +119,36 @@ const Explore = () => {
   return (
     <div className="min-h-screen pt-16 bg-background">
       {/* Header with Premium Styling */}
-      <div className="bg-gradient-hero text-white py-12">
+      <div className="text-white py-12" style={{ background: 'linear-gradient(135deg, hsl(215, 30%, 12%) 0%, hsl(215, 30%, 18%) 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">Explore Stories</h1>
-              <p className="text-xl text-white/90 max-w-2xl">
+              <h1 className="text-4xl font-bold mb-4" style={{ color: 'hsl(0, 0%, 95%)' }}>Explore Stories</h1>
+              <p className="text-xl max-w-2xl" style={{ color: 'hsl(0, 0%, 85%)' }}>
                 Discover authentic local experiences from storytellers around the world
               </p>
             </div>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white/30 text-white hover:bg-white/20 hover:text-white shadow-lg transition-all"
-              onClick={() => setShowMap(!showMap)}
-            >
-              <MapIcon className="mr-2 h-5 w-5" />
-              {showMap ? 'Hide Map' : 'Show Map'}
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white hover:bg-white/20 hover:text-white shadow-lg transition-all"
+                onClick={() => fetchStories()}
+                disabled={loading}
+              >
+                <Search className="mr-2 h-5 w-5" />
+                {loading ? 'Refreshing...' : 'Refresh Stories'}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white hover:bg-white/20 hover:text-white shadow-lg transition-all"
+                onClick={() => setShowMap(!showMap)}
+              >
+                <MapIcon className="mr-2 h-5 w-5" />
+                {showMap ? 'Hide Map' : 'Show Map'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -141,17 +166,17 @@ const Explore = () => {
             />
           </div>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-full md:w-48">
+            <SelectTrigger className="w-full md:w-48 bg-slate-800/80 border-slate-700 text-white hover:bg-slate-800">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Filter by category" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Stories</SelectItem>
-              <SelectItem value="food">Food</SelectItem>
-              <SelectItem value="music">Music</SelectItem>
-              <SelectItem value="history">History</SelectItem>
-              <SelectItem value="culture">Culture</SelectItem>
-              <SelectItem value="nightlife">Nightlife</SelectItem>
+            <SelectContent className="bg-slate-800 border-slate-700 text-white">
+              <SelectItem value="all" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">All Stories</SelectItem>
+              <SelectItem value="food" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">Food</SelectItem>
+              <SelectItem value="music" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">Music</SelectItem>
+              <SelectItem value="history" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">History</SelectItem>
+              <SelectItem value="culture" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">Culture</SelectItem>
+              <SelectItem value="nightlife" className="hover:bg-slate-700 focus:bg-slate-700 focus:text-white">Nightlife</SelectItem>
             </SelectContent>
           </Select>
         </div>

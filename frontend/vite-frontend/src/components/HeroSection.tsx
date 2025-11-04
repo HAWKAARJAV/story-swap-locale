@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users, BookOpen, ArrowRight, Globe, Star, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -34,6 +35,18 @@ const HeroSection = () => {
 
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   
+  // Counting animation states
+  const [storiesCount, setStoriesCount] = useState(0);
+  const [citiesCount, setCitiesCount] = useState(0);
+  const [swappersCount, setSwappersCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  // Target values for counting
+  const targetStories = 2847;
+  const targetCities = 156;
+  const targetSwappers = 1234;
+
   // Auto-rotate background images - Optimized timing
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,6 +55,63 @@ const HeroSection = () => {
     
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
+
+  // Counting animation effect - Start immediately on mount
+  useEffect(() => {
+    // Delay start slightly to make animation more visible
+    const startDelay = setTimeout(() => {
+      if (!hasAnimated) {
+        setHasAnimated(true);
+        
+        // Animate Stories Count
+        const storiesDuration = 2500;
+        const storiesSteps = 60;
+        const storiesIncrement = targetStories / storiesSteps;
+        let storiesStep = 0;
+        const storiesInterval = setInterval(() => {
+          storiesStep++;
+          if (storiesStep >= storiesSteps) {
+            setStoriesCount(targetStories);
+            clearInterval(storiesInterval);
+          } else {
+            setStoriesCount(Math.floor(storiesStep * storiesIncrement));
+          }
+        }, storiesDuration / storiesSteps);
+
+        // Animate Cities Count
+        const citiesDuration = 2500;
+        const citiesSteps = 60;
+        const citiesIncrement = targetCities / citiesSteps;
+        let citiesStep = 0;
+        const citiesInterval = setInterval(() => {
+          citiesStep++;
+          if (citiesStep >= citiesSteps) {
+            setCitiesCount(targetCities);
+            clearInterval(citiesInterval);
+          } else {
+            setCitiesCount(Math.floor(citiesStep * citiesIncrement));
+          }
+        }, citiesDuration / citiesSteps);
+
+        // Animate Swappers Count
+        const swappersDuration = 2500;
+        const swappersSteps = 60;
+        const swappersIncrement = targetSwappers / swappersSteps;
+        let swappersStep = 0;
+        const swappersInterval = setInterval(() => {
+          swappersStep++;
+          if (swappersStep >= swappersSteps) {
+            setSwappersCount(targetSwappers);
+            clearInterval(swappersInterval);
+          } else {
+            setSwappersCount(Math.floor(swappersStep * swappersIncrement));
+          }
+        }, swappersDuration / swappersSteps);
+      }
+    }, 1000); // Start after 1 second
+
+    return () => clearTimeout(startDelay);
+  }, [hasAnimated]);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Optimized Background Carousel */}
@@ -80,29 +150,55 @@ const HeroSection = () => {
             </span>
           </div>
           
-          {/* Simplified Main Heading */}
-          <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight text-white animate-fade-in">
-            Share Stories,
+          {/* Animated Gradient Heading with Text Reveal */}
+          <motion.h1 
+            className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight gradient-animated-text overflow-hidden"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <motion.span
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="inline-block"
+            >
+              Share Stories,
+            </motion.span>
             <br />
-            <span className="text-primary">
+            <motion.span
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+              className="inline-block"
+            >
               Discover Cities
-            </span>
-          </h1>
+            </motion.span>
+          </motion.h1>
           
-          {/* Subtitle */}
-          <p className="font-body text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+          {/* Subtitle with Reveal Animation */}
+          <motion.p 
+            className="font-body text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+          >
             Connect with travelers and locals worldwide through authentic stories. 
             <br className="hidden sm:block" />
             Unlock hidden gems and share your adventures.
-          </p>
+          </motion.p>
 
-          {/* Enhanced Call-to-Action Buttons with Magnetic Effects */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+          {/* Enhanced Call-to-Action Buttons with Reveal Animation */}
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.1, ease: "easeOut" }}
+          >
             <Button 
               size="lg" 
-              className="btn-magnetic bg-gradient-to-r from-primary to-primary-glow text-white text-lg px-12 py-5 h-auto rounded-2xl shadow-2xl hover:shadow-primary/40 transition-all duration-500 group animate-fade-in"
+              className="btn-magnetic bg-gradient-to-r from-primary to-primary-glow text-white text-lg px-12 py-5 h-auto rounded-2xl shadow-2xl hover:shadow-primary/40 transition-all duration-500 group"
               onClick={() => navigate('/explore')}
-              style={{ animationDelay: '5s' }}
             >
               <MapPin className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
               Start Exploring
@@ -113,9 +209,8 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group animate-fade-in"
+                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group"
                 onClick={() => navigate('/submit')}
-                style={{ animationDelay: '5.5s' }}
               >
                 <BookOpen className="mr-3 h-5 w-5 group-hover:rotate-6 transition-transform duration-300" />
                 Share Your Story
@@ -124,22 +219,25 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group animate-fade-in"
+                className="btn-magnetic glass-enhanced border-2 border-white/40 text-white hover:bg-white hover:text-secondary text-lg px-12 py-5 h-auto rounded-2xl transition-all duration-500 group"
                 onClick={() => navigate('/register')}
-                style={{ animationDelay: '5.5s' }}
               >
                 <Users className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 Join Community
               </Button>
             )}
-          </div>
+          </motion.div>
 
-          {/* Enhanced Stats Cards with Tilt Effects */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Enhanced Stats Cards with Tilt Effects and Counting Animation */}
+          <div ref={statsRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6s' }}>
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
-                  2,847
+                <div className="text-5xl font-bold text-white mb-3 group-hover:scale-110 transition-all duration-300" style={{
+                  textShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
+                  transform: storiesCount > 0 ? 'scale(1)' : 'scale(0.8)',
+                  transition: 'all 0.3s ease'
+                }}>
+                  {storiesCount.toLocaleString()}
                 </div>
                 <div className="text-white font-semibold text-lg mb-1">Stories Shared</div>
                 <div className="text-white/70 text-sm">From travelers worldwide</div>
@@ -148,8 +246,12 @@ const HeroSection = () => {
             </div>
             <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6.2s' }}>
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
-                  156
+                <div className="text-5xl font-bold text-white mb-3 group-hover:scale-110 transition-all duration-300" style={{
+                  textShadow: '0 0 20px rgba(236, 72, 153, 0.5)',
+                  transform: citiesCount > 0 ? 'scale(1)' : 'scale(0.8)',
+                  transition: 'all 0.3s ease'
+                }}>
+                  {citiesCount.toLocaleString()}
                 </div>
                 <div className="text-white font-semibold text-lg mb-1">Cities Covered</div>
                 <div className="text-white/70 text-sm">Across 6 continents</div>
@@ -158,8 +260,12 @@ const HeroSection = () => {
             </div>
             <div className="card-tilt glass-enhanced p-8 rounded-3xl shadow-2xl border border-white/30 group animate-slide-up" style={{ animationDelay: '6.4s' }}>
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
-                  1,234
+                <div className="text-5xl font-bold text-white mb-3 group-hover:scale-110 transition-all duration-300" style={{
+                  textShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
+                  transform: swappersCount > 0 ? 'scale(1)' : 'scale(0.8)',
+                  transition: 'all 0.3s ease'
+                }}>
+                  {swappersCount.toLocaleString()}
                 </div>
                 <div className="text-white font-semibold text-lg mb-1">Story Swappers</div>
                 <div className="text-white/70 text-sm">Active community members</div>

@@ -143,7 +143,7 @@ Hidden Creek Lake isn't on any tourist map. Located about 45 minutes from South 
   return (
     <div className="min-h-screen pt-20 bg-background">
       {/* Header */}
-      <div className="bg-gradient-hero text-white py-8">
+      <div className="text-white py-8" style={{ background: 'linear-gradient(135deg, hsl(215, 30%, 12%) 0%, hsl(215, 30%, 18%) 100%)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
             <Button

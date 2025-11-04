@@ -365,6 +365,43 @@
     100% { background-position: 0% 50%; }
   }
 
+  /* Animated Gradient Text Effect */
+  .gradient-animated-text {
+    background: linear-gradient(
+      90deg,
+      #8b5cf6,
+      #3b82f6,
+      #ec4899,
+      #8b5cf6
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientTextFlow 4s ease-in-out infinite;
+  }
+
+  @keyframes gradientTextFlow {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Glowing Border Animation for Glass Container */
+  @keyframes borderGlow {
+    0%, 100% {
+      opacity: 0.3;
+      transform: rotate(0deg);
+    }
+    50% {
+      opacity: 0.6;
+      transform: rotate(180deg);
+    }
+  }
+
   /* Ripple Effect */
   @keyframes ripple {
     0% { transform: scale(0); opacity: 1; }
@@ -915,3 +952,70 @@
     }
   }
 }
+
+/* ==================================================
+   Global background image + overlay and input fixes
+   Ensures typed text is readable and pages keep the
+   glassmorphism aesthetic with a subtle white overlay.
+   ================================================== */
+
+body {
+  /* full-viewport responsive background image */
+  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* soft semi-transparent overlay to improve legibility */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ensure app root sits above the overlay */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Make form text clearly visible on top of the background
+   and apply a subtle light input background to match the UI */
+input,
+textarea,
+select,
+.input,
+[contenteditable="true"] {
+  color: hsl(var(--foreground)) !important;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid hsl(var(--border));
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Dark mode: reduce overlay and adjust input styling for contrast */
+.dark body::before {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.dark input,
+.dark textarea,
+.dark select,
+.dark .input,
+.dark [contenteditable="true"] {
+  color: hsl(var(--popover-foreground)) !important;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+

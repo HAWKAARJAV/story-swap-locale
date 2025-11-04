@@ -26,13 +26,30 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-24 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-muted/30 relative overflow-hidden" style={{
+      backgroundImage: 'url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
+    }}>
+      {/* Semi-transparent overlay */}
+      <div className="absolute inset-0 bg-white/85" style={{ zIndex: 0 }} />
+      
+      {/* Parallax animated elements - More visible */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <div className="floating absolute top-20 left-10 w-40 h-40 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-2xl shadow-2xl" />
+        <div className="floating absolute top-40 right-20 w-56 h-56 bg-gradient-to-br from-purple-400/40 to-pink-400/40 rounded-full blur-3xl shadow-2xl" />
+        <div className="floating absolute bottom-32 left-1/4 w-48 h-48 bg-gradient-to-br from-orange-400/40 to-red-400/40 rounded-full blur-2xl shadow-2xl" />
+        <div className="floating absolute bottom-20 right-1/3 w-52 h-52 bg-gradient-to-br from-teal-400/40 to-green-400/40 rounded-full blur-3xl shadow-2xl" />
+        <div className="floating absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-br from-indigo-400/30 to-blue-400/30 rounded-full blur-3xl shadow-2xl" style={{ animationDelay: '-4.5s' }} />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style={{ zIndex: 1 }}>
         <div className="text-center mb-20 animate-fade-in">
           <h2 className="text-5xl font-bold mb-6 text-secondary">
             How It Works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: 'hsl(215, 25%, 20%)' }}>
             Join thousands of travelers and locals sharing authentic stories. 
             Discover hidden gems and create meaningful connections through the art of storytelling.
           </p>
@@ -73,7 +90,7 @@ const HowItWorks = () => {
                   {step.title}
                 </h3>
                 
-                <p className="text-muted-foreground leading-relaxed text-lg">
+                <p className="leading-relaxed text-lg" style={{ color: 'hsl(215, 25%, 25%)' }}>
                   {step.description}
                 </p>
               </div>

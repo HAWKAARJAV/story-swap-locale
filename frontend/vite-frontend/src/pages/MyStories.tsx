@@ -26,29 +26,40 @@ const MyStories = () => {
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
 
   // Fetch user's stories
-  useEffect(() => {
-    const fetchMyStories = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await apiService.getMyStories();
-        
-        if (response.error) {
-          setError(response.error);
-        } else if (response.data) {
-          setStories(response.data.stories);
-        }
-      } catch (err) {
-        setError('Failed to load your stories');
-        console.error('Error fetching my stories:', err);
-      } finally {
-        setLoading(false);
+  const fetchMyStories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getMyStories();
+      
+      if (response.error) {
+        setError(response.error);
+      } else if (response.data) {
+        setStories(response.data.stories);
       }
-    };
+    } catch (err) {
+      setError('Failed to load your stories');
+      console.error('Error fetching my stories:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
 
     if (user) {
       fetchMyStories();
     }
+    
+    // Refetch when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user) {
+        fetchMyStories();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [user]);
 
   // Handler functions
@@ -95,7 +106,7 @@ const MyStories = () => {
   return (
     <div className="min-h-screen pt-20 bg-background">
       {/* Header */}
-      <div className="bg-gradient-hero text-white py-12">
+      <div className="text-white py-12" style={{ background: 'linear-gradient(135deg, hsl(215, 30%, 12%) 0%, hsl(215, 30%, 18%) 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
@@ -104,14 +115,26 @@ const MyStories = () => {
                 {user ? `${user.displayName}'s published stories` : 'Manage and track your published stories'}
               </p>
             </div>
-            <Button 
-              size="lg" 
-              className="bg-white text-primary hover:bg-white/90"
-              onClick={() => navigate('/submit')}
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Add New Story
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/20 hover:text-white"
+                onClick={() => fetchMyStories()}
+                disabled={loading}
+              >
+                <Eye className="mr-2 h-5 w-5" />
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </Button>
+              <Button 
+                size="lg" 
+                className="bg-white text-primary hover:bg-white/90"
+                onClick={() => navigate('/submit')}
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Add New Story
+              </Button>
+            </div>
           </div>
         </div>
       </div>

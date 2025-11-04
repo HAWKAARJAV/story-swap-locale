@@ -62,7 +62,7 @@ const SubmitStory = () => {
   return (
     <div className="min-h-screen pt-16 bg-background">
       {/* Header */}
-      <div className="bg-gradient-hero text-white py-12">
+      <div className="text-white py-12" style={{ background: 'linear-gradient(135deg, hsl(215, 30%, 12%) 0%, hsl(215, 30%, 18%) 100%)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Share Your Story</h1>
           <p className="text-xl text-white/90">

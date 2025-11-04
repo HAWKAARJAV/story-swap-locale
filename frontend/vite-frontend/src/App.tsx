@@ -22,6 +22,7 @@ import MapView from '@/pages/MapView';
 import About from '@/pages/About';
 import NotFound from '@/pages/NotFound';
 import TravelPlanner from '@/pages/TravelPlanner';
+import StoryDetail from '@/pages/StoryDetail';
 import LogoutConfirmationDialog from './components/LogoutConfirmationDialog';
 
 const queryClient = new QueryClient();
@@ -117,6 +118,14 @@ const App = () => {
                       element={
                         <ProtectedRoute requireAuth redirectTo="/login">
                           <TravelPlanner />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/story-detail"
+                      element={
+                        <ProtectedRoute requireAuth={false} redirectTo="/login">
+                          <StoryDetail />
                         </ProtectedRoute>
                       }
                     />

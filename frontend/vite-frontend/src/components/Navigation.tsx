@@ -25,7 +25,7 @@ import { useAuth } from '../contexts/AuthContext';
 const Navigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, setShowLogoutConfirmation } = useAuth();
   const isSignedIn = !!user;
 
   // State management
@@ -38,8 +38,7 @@ const Navigation: React.FC = () => {
   const notificationCount = 3; // Mock notification count
 
   const handleLogoutClick = () => {
-    logout();
-    navigate('/');
+    setShowLogoutConfirmation(true);
   };
 
   return (
@@ -58,7 +57,7 @@ const Navigation: React.FC = () => {
             0 8px 32px rgba(0, 0, 0, 0.3),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          overflow: hidden;
+          overflow: visible;
         }
 
         .dynamic-island-complete.collapsed {
@@ -229,12 +228,13 @@ const Navigation: React.FC = () => {
         }
       `}</style>
 
-      <nav className="fixed top-0 left-0 right-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-[9000]">
         {/* Dynamic Island Container */}
         <div 
           className={`dynamic-island-complete transition-all duration-500 ease-in-out ${
             isExpanded ? 'expanded' : 'collapsed'
           }`}
+          style={{ overflow: 'visible' }}
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => {
             setIsExpanded(false);
@@ -246,7 +246,7 @@ const Navigation: React.FC = () => {
             
             {/* Logo Section */}
             <Link 
-              to={isSignedIn ? "/explore" : "/"} 
+              to="/" 
               className="flex items-center space-x-3 group flex-shrink-0"
             >
               <div className="relative p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
@@ -327,41 +327,41 @@ const Navigation: React.FC = () => {
             </div>
 
             {/* Right Section - User Actions */}
-            <div className="flex items-center space-x-2 flex-shrink-0">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               {isSignedIn ? (
-                <div className="relative flex items-center space-x-2">
+                <div className="relative flex items-center space-x-3">
                   {/* Notifications */}
                   <button
-                    className="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300"
+                    className="relative p-2.5 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300 border border-white/20"
                     onClick={() => setShowNotifications(!showNotifications)}
                   >
-                    <Bell className="h-4 w-4 text-white" />
+                    <Bell className="h-5 w-5 text-white" />
                     {notificationCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
                         {notificationCount}
                       </span>
                     )}
                   </button>
 
-                  {/* User Menu Button */}
+                  {/* User Menu Button - Always Visible */}
                   <button
-                    className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300"
+                    className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 transition-all duration-300 border border-white/30 hover:border-white/50 shadow-lg"
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     onMouseEnter={() => setShowUserMenu(true)}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-white" />
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                      <User className="h-5 w-5 text-white" />
                     </div>
-                    <span className="text-white/90 font-medium text-sm hidden sm:block">
+                    <span className="text-white font-semibold text-sm">
                       {user?.displayName || user?.username || 'User'}
                     </span>
-                    <ChevronDown className="h-4 w-4 text-white/70" />
+                    <ChevronDown className="h-4 w-4 text-white" />
                   </button>
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
                     <div 
-                      className="absolute top-full right-20 mt-2 w-80 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl z-50"
+                      className="absolute top-full right-20 mt-2 w-80 bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-[9999]"
                       onMouseLeave={() => setShowNotifications(false)}
                     >
                       <div className="p-4">
@@ -396,7 +396,7 @@ const Navigation: React.FC = () => {
                   {/* User Dropdown Menu */}
                   {showUserMenu && (
                     <div 
-                      className="absolute top-full right-0 mt-2 w-64 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl z-50"
+                      className="absolute top-full right-0 mt-2 w-64 bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-[9999]"
                       onMouseLeave={() => setShowUserMenu(false)}
                     >
                       <div className="p-4">
@@ -457,15 +457,15 @@ const Navigation: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <Link to="/login">
-                    <button className="island-button secondary">
-                      <span>Start Exploring</span>
+                    <button className="px-5 py-2.5 rounded-xl font-semibold text-sm bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 hover:border-white/50 transition-all duration-300 hover:scale-105 shadow-lg">
+                      Login
                     </button>
                   </Link>
                   <Link to="/register">
-                    <button className="island-button primary">
-                      <span>Join Community</span>
+                    <button className="px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/50">
+                      Sign Up
                     </button>
                   </Link>
                 </div>

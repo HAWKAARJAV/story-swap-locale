@@ -118,8 +118,8 @@ const StoryCard = ({
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      {/* Glassmorphism Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-md border border-white/20 rounded-2xl" />
+      {/* Glassmorphism Background - Dark Semi-transparent */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-800/85 to-gray-900/90 backdrop-blur-md border border-white/10 rounded-2xl" />
       
       {/* Glow Effect */}
       <motion.div 

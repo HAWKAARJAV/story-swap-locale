@@ -2,6 +2,7 @@ import StoryCard from "./StoryCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import jazzClubImage from "@/assets/jazz-club.jpg";
 import parisCafeImage from "@/assets/paris-cafe.jpg";
 import communityFoodImage from "@/assets/community-food.jpg";
@@ -83,33 +84,112 @@ const FeaturedStories = () => {
     console.log("Opening story submission...");
   };
 
+  const handleStoryClick = (story: any) => {
+    // Navigate to story detail page with story data
+    const storyData = encodeURIComponent(JSON.stringify(story));
+    navigate(`/story-detail?data=${storyData}`);
+  };
+
   return (
-    <section className="py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20 animate-fade-in">
-          <h2 className="text-5xl font-bold mb-6 text-secondary">
-            Discover Amazing Stories
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+    <section className="py-24 bg-background relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-indigo-800/20 to-blue-900/20 animate-pulse" style={{ animationDuration: '8s' }} />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16 animate-fade-in">
+          <motion.h2 
+            className="text-5xl font-bold mb-6" 
+            style={{ color: 'hsl(215, 28%, 5%)' }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Discover Stories in Motion
+          </motion.h2>
+          <motion.p 
+            className="text-xl max-w-4xl mx-auto leading-relaxed" 
+            style={{ color: 'hsl(215, 25%, 15%)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Explore authentic experiences from travelers and locals around the world. 
             Each story unlocks a new perspective and reveals the hidden magic of extraordinary places.
-          </p>
+          </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {featuredStories.map((story, index) => (
-            <div 
-              key={story.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 0.2}s` }}
-            >
-              <StoryCard 
-                story={story} 
-                onSwapToUnlock={handleSwapToUnlock}
-              />
-            </div>
-          ))}
-        </div>
+        {/* Glowing Glass Container with Animated Cards */}
+        <motion.div 
+          className="relative p-8 md:p-12 rounded-3xl overflow-hidden mb-12"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08))',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(255,255,255,0.1)'
+          }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          {/* Glowing Border Effect */}
+          <div className="absolute inset-0 rounded-3xl opacity-50 pointer-events-none" style={{
+            background: 'linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.3), transparent)',
+            animation: 'borderGlow 3s ease-in-out infinite'
+          }} />
+
+          {/* Floating Cards Animation */}
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            animate={{ 
+              y: [0, -15, 0]
+            }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 8, 
+              ease: "easeInOut"
+            }}
+          >
+            {featuredStories.slice(0, 3).map((story, index) => (
+              <motion.div 
+                key={story.id}
+                className="transform hover:scale-105 transition-transform duration-300"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 + index * 0.2 }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  rotateY: 5,
+                  transition: { duration: 0.3 }
+                }}
+              >
+                <StoryCard 
+                  story={story} 
+                  onSwapToUnlock={handleSwapToUnlock}
+                  onStoryClick={() => handleStoryClick(story)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Additional Static Cards Below */}
+          <div className="grid grid-cols-1 mt-12">
+            {featuredStories.slice(3).map((story, index) => (
+              <motion.div 
+                key={story.id}
+                className="mb-6 last:mb-0"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 1.2 + index * 0.2 }}
+              >
+                <StoryCard 
+                  story={story} 
+                  onSwapToUnlock={handleSwapToUnlock}
+                  onStoryClick={() => handleStoryClick(story)}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
         <div className="text-center">
           <Button 

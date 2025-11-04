@@ -69,7 +69,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen pt-16 bg-background">
       {/* Profile Header */}
-      <div className="bg-gradient-hero text-white py-16">
+      <div className="text-white py-16" style={{ background: 'linear-gradient(135deg, hsl(215, 30%, 12%) 0%, hsl(215, 30%, 18%) 100%)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <Avatar className="w-32 h-32 border-4 border-white/20">

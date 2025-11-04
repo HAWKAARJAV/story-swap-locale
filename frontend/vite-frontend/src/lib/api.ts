@@ -196,6 +196,7 @@ class ApiService {
 
       const response = await fetch(url, {
         headers: mergedHeaders,
+        cache: 'no-store', // Disable caching to always fetch fresh data
         ...options,
       });
 
