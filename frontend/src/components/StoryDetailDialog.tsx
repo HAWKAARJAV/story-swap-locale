@@ -27,28 +27,7 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
     }
   };
 
-  // Get story content from API structure
-  const storyContent = story.content.text.body || story.content.snippet || 'No content available';
-  
-  // Sample full content for demonstration
-  const sampleContent = storyContent.length > 100 ? storyContent : `
-    ${storyContent}
-    
-    This is where the full story content would be displayed. In a real application, this would contain the complete narrative that the user wrote when they submitted their story.
-    
-    The story might include:
-    • Detailed descriptions of the location
-    • Personal anecdotes and experiences
-    • Tips and recommendations for other visitors
-    • Historical context or background information
-    • Photos and visual elements
-    
-    For now, this is sample content to demonstrate how the story detail view would work. Each story would have its own unique content based on what the author originally submitted.
-    
-    This particular story about "${story.title}" in ${story.location.address.formatted} has received ${story.engagement.likes} likes and ${story.engagement.comments} comments from the community, showing how much people appreciate local stories and hidden gems.
-    
-    The author shared this story on ${new Date(story.createdAt).toLocaleDateString()}, and it has been viewed ${story.engagement.views} times since then.
-  `;
+  const storyContent = story.content?.text?.body || story.content?.snippet || 'No content available';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -99,7 +78,7 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
           {/* Story Content */}
           <div className="prose max-w-none">
             <DialogDescription className="text-base leading-relaxed whitespace-pre-line">
-              {sampleContent}
+              {storyContent}
             </DialogDescription>
           </div>
 
@@ -124,12 +103,8 @@ const StoryDetailDialog = ({ story, isOpen, onClose }: StoryDetailDialogProps) =
               <Button variant="outline" onClick={onClose}>
                 Close
               </Button>
-              <Button onClick={() => {
-                // Navigate to edit mode - we'll implement this
-                console.log("Edit story:", story._id);
-                onClose();
-              }}>
-                Edit Story
+              <Button asChild>
+                <a href={`/edit-story/${story._id}`}>Edit Story</a>
               </Button>
             </div>
           </div>

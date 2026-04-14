@@ -12,6 +12,7 @@ import { apiService, Story } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 const MyStories = () => {
+  const STORY_CACHE_KEY = "localelens:my-stories";
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -26,9 +27,9 @@ const MyStories = () => {
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
 
   // Fetch user's stories
-  const fetchMyStories = async () => {
+  const fetchMyStories = async (showLoader = true) => {
     try {
-      setLoading(true);
+      if (showLoader) setLoading(true);
       setError(null);
       const response = await apiService.getMyStories();
 
@@ -36,30 +37,33 @@ const MyStories = () => {
         setError(response.error);
       } else if (response.data) {
         setStories(response.data.stories);
+        sessionStorage.setItem(STORY_CACHE_KEY, JSON.stringify(response.data.stories));
       }
     } catch (err) {
       setError('Failed to load your stories');
       console.error('Error fetching my stories:', err);
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
   useEffect(() => {
-
-    if (user) {
-      fetchMyStories();
+    const cachedStories = sessionStorage.getItem(STORY_CACHE_KEY);
+    if (cachedStories) {
+      try {
+        const parsedStories = JSON.parse(cachedStories) as Story[];
+        if (parsedStories.length > 0) {
+          setStories(parsedStories);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.warn("Failed to hydrate cached user stories", error);
+      }
     }
 
-    // Refetch when page becomes visible again
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && user) {
-        fetchMyStories();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    if (user) {
+      fetchMyStories(!cachedStories);
+    }
   }, [user]);
 
   // Handler functions
@@ -308,7 +312,7 @@ const MyStories = () => {
                     </div>
                   </div>
                   <CardDescription className="line-clamp-3">
-                    {story.content?.snippet || story.content?.text?.body?.substring(0, 150) + '...' || 'No description available'}
+                    {story.content?.snippet || `${story.content?.text?.body?.substring(0, 150) || ''}${story.content?.text?.body ? '...' : ''}` || 'No description available'}
                   </CardDescription>
                 </CardHeader>
 
@@ -373,15 +377,12 @@ const MyStories = () => {
 
         {/* Empty State */}
         {!loading && !error && stories.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-16 rounded-3xl border border-dashed border-border bg-card/50">
             <div className="text-muted-foreground mb-4">
               <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-semibold mb-2">No stories yet</h3>
-              <p>
-                {user?.displayName === 'John Doe' || user?.displayName === 'New User'
-                  ? 'You haven\'t uploaded any stories yet. Start sharing your adventures!'
-                  : `${user?.displayName || 'You'} haven't uploaded any stories to this account yet.`
-                }
+              <h3 className="text-2xl font-semibold mb-2 text-foreground">No stories published yet</h3>
+              <p className="max-w-xl mx-auto">
+                Build your portfolio inside the product itself. Publish one strong, image-backed local story and this section becomes a much better recruiter demo.
               </p>
             </div>
             <Button onClick={() => navigate('/submit')} className="mt-4">

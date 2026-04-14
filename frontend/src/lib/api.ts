@@ -1,5 +1,5 @@
 // Smart API URL detection - works for localhost, network access, and production
-const getApiBaseUrl = () => {
+export const getApiBaseUrl = () => {
   // If explicit URL is set, use it
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim()) return `${envUrl}/api/v1`;
@@ -29,6 +29,13 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
+
+const unwrapData = <T>(payload: any, key?: string): T => {
+  if (!payload || typeof payload !== 'object') return payload as T;
+  if (key && key in payload) return payload[key] as T;
+  if ('data' in payload) return payload.data as T;
+  return payload as T;
+};
 
 export interface Tag {
   _id: string;
@@ -254,8 +261,11 @@ class ApiService {
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      return { data };
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
+      return { data: data as T };
     } catch (error) {
       console.error('API request failed:', error);
       return { error: error instanceof Error ? error.message : 'Unknown error' };
@@ -280,7 +290,15 @@ class ApiService {
     const queryString = searchParams.toString();
     const endpoint = `/stories${queryString ? `?${queryString}` : ''}`;
 
-    return this.request<{ stories: Story[]; pagination: Pagination; filters: Filters }>(endpoint);
+    const response = await this.request<any>(endpoint);
+    if (response.error || !response.data) return response as ApiResponse<{ stories: Story[]; pagination: Pagination; filters: Filters }>;
+    return {
+      data: {
+        stories: response.data.stories || [],
+        pagination: response.data.pagination,
+        filters: response.data.filters,
+      }
+    };
   }
 
   async getMyStories(params?: {
@@ -306,7 +324,15 @@ class ApiService {
     const queryString = searchParams.toString();
     const endpoint = `/stories${queryString ? `?${queryString}` : ''}`;
 
-    return this.request<{ stories: Story[]; pagination: Pagination; filters: Filters }>(endpoint);
+    const response = await this.request<any>(endpoint);
+    if (response.error || !response.data) return response as ApiResponse<{ stories: Story[]; pagination: Pagination; filters: Filters }>;
+    return {
+      data: {
+        stories: response.data.stories || [],
+        pagination: response.data.pagination,
+        filters: response.data.filters,
+      }
+    };
   }
 
   private getMockStories(): Partial<Story>[] {
@@ -399,20 +425,26 @@ class ApiService {
   }
 
   async getStoryById(id: string): Promise<ApiResponse<Story>> {
-    return this.request(`/stories/${id}`);
+    const response = await this.request<any>(`/stories/${id}`);
+    if (response.error || !response.data) return response as ApiResponse<Story>;
+    return { data: unwrapData<Story>(response.data, 'story') };
   }
 
   async createStory(storyData: Partial<Story>): Promise<ApiResponse<Story>> {
-    return this.request('/stories', {
+    const response = await this.request<any>('/stories', {
       method: 'POST',
       body: JSON.stringify(storyData),
     });
+    if (response.error || !response.data) return response as ApiResponse<Story>;
+    return { data: unwrapData<Story>(response.data, 'story') };
   }
 
   async publishStory(storyId: string): Promise<ApiResponse<Story>> {
-    return this.request(`/stories/${storyId}/publish`, {
+    const response = await this.request<any>(`/stories/${storyId}/publish`, {
       method: 'POST',
     });
+    if (response.error || !response.data) return response as ApiResponse<Story>;
+    return { data: unwrapData<Story>(response.data, 'story') };
   }
 
   async deleteStory(storyId: string): Promise<ApiResponse<void>> {
@@ -470,7 +502,14 @@ class ApiService {
   async saveTripPlan(tripPlan: any): Promise<ApiResponse<any>> {
     return this.request('/travel/save-plan', {
       method: 'POST',
-      body: JSON.stringify({ tripPlan }),
+      body: JSON.stringify(tripPlan),
+    });
+  }
+
+  async sendAgentXMessage(message: string, context: Record<string, unknown> = {}): Promise<ApiResponse<any>> {
+    return this.request('/agentx/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, context }),
     });
   }
 }

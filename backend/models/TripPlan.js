@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const tripPlanSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true,
     index: true
@@ -59,7 +59,7 @@ const tripPlanSchema = new mongoose.Schema({
     type: Date
   },
   linkedStory: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Story'
   },
   aiSuggestions: [{

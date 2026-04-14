@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { MapPin, Filter, Search, Eye, Heart, Share2, Loader2, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiService, Story } from "@/lib/api";
-import { handleImageError, avatarPlaceholder, storyImages } from "@/utils/imageUtils";
-import Map from "@/components/Map";
+import { handleImageError, storyImages, getOptimizedImageUrl } from "@/utils/imageUtils";
 import { getLocationCoordinates, calculateCenter, calculateZoom, LocationCoordinates } from "@/utils/locationUtils";
 import { getTagText, getTagKey } from "@/utils/tagUtils";
 
+const Map = lazy(() => import("@/components/Map"));
+
 const Explore = () => {
+  const STORY_CACHE_KEY = "localelens:explore:stories";
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -27,24 +29,28 @@ const Explore = () => {
   }>>([]);
 
   useEffect(() => {
-    // Force fresh fetch on component mount
-    fetchStories();
+    const cachedStories = sessionStorage.getItem(STORY_CACHE_KEY);
+    if (cachedStories) {
+      try {
+        const parsedStories = JSON.parse(cachedStories) as Story[];
+        if (parsedStories.length > 0) {
+          setStories(parsedStories);
+          updateMapData(parsedStories);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.warn("Failed to hydrate cached stories", error);
+      }
+    }
+
+    fetchStories(!cachedStories);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Add a separate effect to refetch when page becomes visible
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchStories();
-      }
-    };
+  const getStoryPreview = (story: Story) =>
+    story.content?.text?.body || story.content?.snippet || 'No description available';
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
-
-  const fetchStories = async () => {
-    setLoading(true);
+  const fetchStories = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     setError(null);
 
     const response = await apiService.getStories({ limit: 20 });
@@ -54,9 +60,10 @@ const Explore = () => {
     } else if (response.data) {
       setStories(response.data.stories);
       updateMapData(response.data.stories);
+      sessionStorage.setItem(STORY_CACHE_KEY, JSON.stringify(response.data.stories));
     }
 
-    setLoading(false);
+    if (showLoader) setLoading(false);
   };
 
   const updateMapData = (storyList: Story[]) => {
@@ -89,7 +96,7 @@ const Explore = () => {
           content: `
             <div class="p-2 max-w-xs">
               <h3 class="font-semibold text-sm mb-1">${story.title}</h3>
-              <p class="text-xs text-gray-600 mb-2">${story.content?.snippet?.substring(0, 100) || 'No description available'}...</p>
+              <p class="text-xs text-gray-600 mb-2">${getStoryPreview(story).substring(0, 100)}...</p>
               <div class="flex items-center justify-between text-xs text-gray-500">
                 <span>by ${story.author?.displayName || 'Unknown'}</span>
                 <div class="flex space-x-2">
@@ -114,7 +121,10 @@ const Explore = () => {
   const filteredStories = stories.filter(story => {
     const matchesSearch = (story.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (story.location?.address?.formatted?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === "all" || story.tags?.some(tag => tag.toLowerCase() === filter.toLowerCase());
+    const matchesFilter = filter === "all" || story.tags?.some(tag => {
+      const tagText = typeof tag === "string" ? tag : (tag.displayName || tag.name || "");
+      return tagText.toLowerCase() === filter.toLowerCase();
+    });
     return matchesSearch && matchesFilter;
   });
 
@@ -199,12 +209,14 @@ const Explore = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="h-[400px] p-4">
-              <Map
-                center={mapCenter}
-                zoom={mapZoom}
-                markers={mapMarkers}
-                className="rounded-lg"
-              />
+              <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading map...</div>}>
+                <Map
+                  center={mapCenter}
+                  zoom={mapZoom}
+                  markers={mapMarkers}
+                  className="rounded-lg"
+                />
+              </Suspense>
             </CardContent>
           </Card>
         )}        {/* Stories Grid */}
@@ -230,7 +242,9 @@ const Explore = () => {
                     <img
                       src={storyImage}
                       alt={story.title || 'Story image'}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+                      srcSet={`${getOptimizedImageUrl(storyImage, { width: 400, height: 240, format: 'webp' })}`}
                       onError={handleImageError}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-70 transition-opacity"></div>
@@ -268,7 +282,7 @@ const Explore = () => {
 
                   <CardContent className="pb-4 flex-grow flex flex-col group-hover:bg-muted/30 transition-colors">
                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                      {story.content?.snippet || 'No description available'}
+                      {getStoryPreview(story)}
                     </p>
 
                     <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/30">

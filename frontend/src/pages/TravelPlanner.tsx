@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, Bot, MapPin, Heart, Calendar, User, Loader2, MessageCircle, Send, Share2, Save, Check } from 'lucide-react';
 import { agentXService, type ChatResponse } from '@/lib/agentx';
 import { useToast } from '@/hooks/use-toast';
+import { apiService } from '@/lib/api';
 
 interface TripPlan {
   destination: string;
@@ -102,9 +103,6 @@ const TravelPlanner = () => {
   const generateTripPlan = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call with demo response
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       const demoPlans = {
         'adventure': {
           destination: "Spiti Valley, Himachal Pradesh",
@@ -135,6 +133,18 @@ const TravelPlanner = () => {
         }
       };
 
+      const response = await apiService.generateTravelPlan({
+        userInput,
+        currentMood,
+        previousStories: userMood.previousStories,
+        userId: user?.id
+      });
+
+      if (response.data?.data) {
+        setTripPlan(response.data.data);
+        return;
+      }
+
       let selectedPlan = demoPlans.peaceful;
       if (currentMood.toLowerCase().includes('adventure')) {
         selectedPlan = demoPlans.adventure;
@@ -145,8 +155,9 @@ const TravelPlanner = () => {
       setTripPlan(selectedPlan);
     } catch (error) {
       console.error('Error generating trip plan:', error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const saveTripPlan = async () => {
@@ -154,19 +165,18 @@ const TravelPlanner = () => {
 
     setIsSaving(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/travel/save-plan`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const response = await apiService.saveTripPlan({
+        ...tripPlan,
+        context: {
+          userInput,
+          currentMood,
+          previousStories: userMood.previousStories
         },
-        body: JSON.stringify(tripPlan)
+        source: 'ai'
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setRecentTripPlan(result.data);
+      if (response.data?.data) {
+        setRecentTripPlan(response.data.data);
         setIsSaved(true);
         toast({
           title: "Trip Plan Saved!",
@@ -175,7 +185,7 @@ const TravelPlanner = () => {
         });
         setTimeout(() => setIsSaved(false), 3000);
       } else {
-        throw new Error('Failed to save plan');
+        throw new Error(response.error || 'Failed to save plan');
       }
     } catch (error) {
       console.error('Error saving trip plan:', error);

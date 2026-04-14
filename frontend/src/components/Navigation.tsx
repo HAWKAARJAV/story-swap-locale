@@ -205,8 +205,6 @@ const Navigation: React.FC = () => {
           width: 100%;
           justify-content: flex-start;
         }
-        }
-
         .quick-action-item:hover {
           color: white;
           background: rgba(255, 255, 255, 0.1);
@@ -365,12 +363,12 @@ const Navigation: React.FC = () => {
                           </Link>
 
                           <Link
-                            to="/favorites"
+                            to="/map"
                             className="flex items-center space-x-2 w-full px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
                             onClick={() => setShowQuickActions(false)}
                           >
                             <Heart className="h-4 w-4" />
-                            <span>Favorites</span>
+                            <span>Story Map</span>
                           </Link>
 
                           <button

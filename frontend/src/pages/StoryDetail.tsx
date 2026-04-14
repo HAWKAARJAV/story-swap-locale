@@ -1,39 +1,74 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Heart, MessageCircle, Share2, BookOpen } from "lucide-react";
+import { ArrowLeft, MapPin, Heart, MessageCircle, Share2, BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { avatarPlaceholder } from "@/utils/imageUtils";
+import { avatarPlaceholder, handleImageError, storyImages } from "@/utils/imageUtils";
+import { apiService, Story } from "@/lib/api";
 
 const StoryDetail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<Story | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get story data from URL params
-    const storyData = searchParams.get('data');
-    if (storyData) {
-      try {
-        const parsedStory = JSON.parse(decodeURIComponent(storyData));
-        setStory(parsedStory);
-      } catch (error) {
-        console.error('Error parsing story data:', error);
-        navigate('/');
+    const loadStory = async () => {
+      const storyId = searchParams.get('id') || searchParams.get('storyId');
+      const storyData = searchParams.get('data');
+
+      if (storyId) {
+        const response = await apiService.getStoryById(storyId);
+        if (response.data) {
+          setStory(response.data);
+          setLoading(false);
+          return;
+        }
       }
-    } else {
-      navigate('/');
-    }
+
+      if (storyData) {
+        try {
+          const parsedStory = JSON.parse(decodeURIComponent(storyData));
+          setStory(parsedStory);
+        } catch (error) {
+          console.error('Error parsing story data:', error);
+          navigate('/explore');
+        }
+      } else if (!storyId) {
+        navigate('/explore');
+      }
+
+      setLoading(false);
+    };
+
+    loadStory();
   }, [searchParams, navigate]);
 
-  if (!story) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'hsl(215, 20%, 18%)' }}>
-        <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+        <Loader2 className="h-12 w-12 animate-spin text-white" />
       </div>
     );
   }
+
+  if (!story) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 text-center" style={{ backgroundColor: 'hsl(215, 20%, 18%)' }}>
+        <div>
+          <h1 className="text-2xl font-semibold text-white mb-3">Story unavailable</h1>
+          <p className="text-white/70 mb-6">This story could not be loaded.</p>
+          <Button onClick={() => navigate('/explore')}>Back to Explore</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const heroImage =
+    story.content?.media?.find((media) => media.type === 'image')?.url ||
+    storyImages.delhi;
+  const storyBody = story.content?.text?.body || story.content?.snippet || 'No content available.';
 
   return (
     <div className="min-h-screen pt-24 pb-16" style={{ backgroundColor: 'hsl(215, 20%, 18%)' }}>
@@ -49,12 +84,13 @@ const StoryDetail = () => {
         </Button>
 
         {/* Hero Image */}
-        {story.image && (
+        {heroImage && (
           <div className="relative w-full h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl">
             <img
-              src={story.image}
+              src={heroImage}
               alt={story.title}
               className="w-full h-full object-cover"
+              onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
@@ -65,7 +101,7 @@ const StoryDetail = () => {
               </h1>
               <div className="flex items-center text-white/90 gap-2">
                 <MapPin className="h-5 w-5" />
-                <span className="text-lg">{story.location?.address?.formatted || story.location || 'Unknown Location'}</span>
+                    <span className="text-lg">{story.location?.address?.formatted || 'Unknown Location'}</span>
               </div>
             </div>
           </div>
@@ -90,10 +126,10 @@ const StoryDetail = () => {
                     </Badge>
                   )}
                 </div>
-                {story.readTime && (
+                {story.metadata?.readingTime && (
                   <div className="flex items-center text-white/70 text-sm mt-1">
                     <BookOpen className="h-4 w-4 mr-1" />
-                    {story.readTime}
+                    {story.metadata.readingTime} min read
                   </div>
                 )}
               </div>
@@ -136,16 +172,14 @@ const StoryDetail = () => {
         {/* Story Content */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/20">
           <div className="prose prose-lg prose-invert max-w-none">
-            {story.content?.text?.body || story.fullContent ? (
-              (story.content?.text?.body || story.fullContent).split('\n\n').map((paragraph: string, index: number) => (
+            {storyBody ? (
+              storyBody.split('\n\n').map((paragraph: string, index: number) => (
                 <p key={index} className="text-white/90 text-lg leading-relaxed mb-6">
                   {paragraph}
                 </p>
               ))
             ) : (
-              <p className="text-white/90 text-lg leading-relaxed">
-                {story.content?.snippet || story.excerpt || 'No content available.'}
-              </p>
+              <p className="text-white/90 text-lg leading-relaxed">No content available.</p>
             )}
           </div>
         </div>
@@ -155,7 +189,7 @@ const StoryDetail = () => {
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-all duration-300"
-            onClick={() => navigate('/submit-story')}
+            onClick={() => navigate('/submit')}
           >
             Share Your Story
           </Button>

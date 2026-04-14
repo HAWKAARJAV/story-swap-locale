@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import HowItWorks from "../components/HowItWorks";
 import FeaturedStories from "../components/FeaturedStories";
@@ -130,9 +131,9 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Explore</h4>
               <ul className="space-y-3 text-white/60">
-                <li><a href="/explore" className="hover:text-primary transition-colors">Stories</a></li>
-                <li><a href="/plan" className="hover:text-primary transition-colors">Plan Trip</a></li>
-                <li><a href="/submit" className="hover:text-primary transition-colors">Share Story</a></li>
+                <li><Link to="/explore" className="hover:text-primary transition-colors">Stories</Link></li>
+                <li><Link to="/plan" className="hover:text-primary transition-colors">Plan Trip</Link></li>
+                <li><Link to="/submit" className="hover:text-primary transition-colors">Share Story</Link></li>
               </ul>
             </div>
 
@@ -140,8 +141,8 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-3 text-white/60">
-                <li><a href="/about" className="hover:text-primary transition-colors">About</a></li>
-                <li><a href="/contact" className="hover:text-primary transition-colors">Contact</a></li>
+                <li><Link to="/about" className="hover:text-primary transition-colors">About</Link></li>
+                <li><Link to="/contact-us" className="hover:text-primary transition-colors">Contact</Link></li>
                 <li><a href="#" className="hover:text-primary transition-colors">Privacy</a></li>
               </ul>
             </div>

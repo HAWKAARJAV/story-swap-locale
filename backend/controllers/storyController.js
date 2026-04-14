@@ -264,15 +264,17 @@ const getStories = asyncHandler(async (req, res) => {
       const qLimit = parseInt(limit);
       const qSkip = (parseInt(page) - 1) * qLimit;
       // Removed verbose debug logging after stabilization.
-      stories = await Story.find(query)
-        .populate('author', 'username displayName avatar homeCity stats')
-        .populate('location', 'coordinates address description')
-        .populate('tags', 'name displayName color')
-        .sort(sortOptions)
-        .limit(qLimit)
-        .skip(qSkip)
-        .lean();
-      total = await Story.countDocuments(query);
+      [stories, total] = await Promise.all([
+        Story.find(query)
+          .populate('author', 'username displayName avatar homeCity stats')
+          .populate('location', 'coordinates address description')
+          .populate('tags', 'name displayName color')
+          .sort(sortOptions)
+          .limit(qLimit)
+          .skip(qSkip)
+          .lean(),
+        Story.countDocuments(query)
+      ]);
     } catch (innerErr) {
       // Log full error details
       logger.error('Story query failed', {

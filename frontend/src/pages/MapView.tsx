@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Eye, Heart, MessageCircle } from "lucide-react";
-import Map from "@/components/Map";
 import { getLocationCoordinates, calculateCenter, calculateZoom, LocationCoordinates } from "@/utils/locationUtils";
 import { storyImages, handleImageError } from "@/utils/imageUtils";
+import { apiService } from "@/lib/api";
+
+const Map = lazy(() => import("@/components/Map"));
 
 interface Story {
   id: string;
@@ -21,68 +23,8 @@ interface Story {
 }
 
 const MapView = () => {
-  const [stories] = useState<Story[]>([
-    {
-      id: "1",
-      title: "My Hidden Coffee Spot in Brooklyn",
-      excerpt: "Found this amazing little café that serves the best cortado I've ever had...",
-      location: "Brooklyn, NY",
-      tags: ["Coffee", "Hidden Gems", "NYC"],
-      likes: 23,
-      comments: 8,
-      views: 156,
-      author: "Sarah M.",
-      image: storyImages.brooklyn
-    },
-    {
-      id: "2",
-      title: "The Street Art Tour I Created",
-      excerpt: "After years of exploring murals in my neighborhood, I decided to create my own walking tour...",
-      location: "Austin, TX",
-      tags: ["Art", "Walking Tours", "Community"],
-      likes: 45,
-      comments: 12,
-      views: 234,
-      author: "Mike D.",
-      image: storyImages.austin
-    },
-    {
-      id: "3",
-      title: "Grandfather's Secret Fishing Spot",
-      excerpt: "A secluded lake where my grandfather taught me patience...",
-      location: "Lake Tahoe, CA",
-      tags: ["Family", "Nature", "Memories"],
-      likes: 18,
-      comments: 5,
-      views: 89,
-      author: "Alex J.",
-      image: storyImages.tahoe
-    },
-    {
-      id: "4",
-      title: "Best Food Truck in Seattle",
-      excerpt: "This Korean-Mexican fusion truck changed my lunch game forever...",
-      location: "Seattle, WA",
-      tags: ["Food", "Street Food", "Fusion"],
-      likes: 67,
-      comments: 23,
-      views: 345,
-      author: "Jenny K.",
-      image: storyImages.seattle
-    },
-    {
-      id: "5",
-      title: "Portland's Hidden Bookstore Café",
-      excerpt: "A magical place where books meet coffee in perfect harmony...",
-      location: "Portland, OR",
-      tags: ["Books", "Coffee", "Portland"],
-      likes: 34,
-      comments: 9,
-      views: 178,
-      author: "David L.",
-      image: storyImages.portland
-    }
-  ]);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [mapCenter, setMapCenter] = useState<LocationCoordinates>({ lat: 39.8283, lng: -98.5795 });
@@ -92,6 +34,33 @@ const MapView = () => {
     title: string;
     content: string;
   }>>([]);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      setLoading(true);
+      const response = await apiService.getStories({ limit: 24 });
+
+      if (response.data?.stories?.length) {
+        const mappedStories: Story[] = response.data.stories.map((story, index) => ({
+          id: story._id,
+          title: story.title,
+          excerpt: story.content?.snippet || story.content?.text?.body || "No preview available.",
+          location: story.location?.address?.formatted || "Unknown location",
+          tags: story.tags.map((tag) => typeof tag === "string" ? tag : (tag.displayName || tag.name || "Tag")),
+          likes: story.engagement?.likes || 0,
+          comments: story.engagement?.comments || 0,
+          views: story.engagement?.views || 0,
+          author: story.author?.displayName || "Unknown",
+          image: story.content?.media?.find((media) => media.type === "image")?.url || Object.values(storyImages)[index % Object.values(storyImages).length]
+        }));
+        setStories(mappedStories);
+      }
+
+      setLoading(false);
+    };
+
+    fetchStories();
+  }, []);
 
   useEffect(() => {
     // Calculate map markers and bounds
@@ -147,6 +116,9 @@ const MapView = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {loading && (
+          <div className="mb-6 text-sm text-muted-foreground">Loading map stories...</div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Map */}
           <div className="lg:col-span-2">
@@ -161,12 +133,14 @@ const MapView = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-[500px] p-4">
-                <Map
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  markers={markers}
-                  className="rounded-lg"
-                />
+                <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading map...</div>}>
+                  <Map
+                    center={mapCenter}
+                    zoom={mapZoom}
+                    markers={markers}
+                    className="rounded-lg"
+                  />
+                </Suspense>
               </CardContent>
             </Card>
           </div>

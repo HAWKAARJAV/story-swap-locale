@@ -25,6 +25,18 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-router-dom'],
+            motion: ['framer-motion'],
+            maps: ['@maptiler/sdk', '@vis.gl/react-google-maps'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs', '@radix-ui/react-toast'],
+          },
+        },
+      },
+    },
     // PostCSS handled in postcss.config.js
   };
 });

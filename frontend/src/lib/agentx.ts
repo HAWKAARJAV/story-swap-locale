@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiService } from '@/lib/api';
 
 // AgentX Configuration (provide key via VITE_AGENTX_KEY; avoid hardcoding secrets)
 const AGENTX_CONFIG = {
@@ -69,10 +69,7 @@ export class AgentXService {
 
   async sendMessage(message: string): Promise<ChatResponse | null> {
     try {
-      const response = await axios.post('/api/v1/agentx/chat', {
-        message,
-        context: { source: 'Tourogram' }
-      });
+      const response = await apiService.sendAgentXMessage(message, { source: 'LocaleLens' });
 
       if (response.data) {
         return {
